@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Metallbau Lern-App</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0E2036;
+    --panel:#122A45;
+    --line:#4A7FA6;
+    --line-bright:#9FC6E8;
+    --accent:#F2B134;
+    --success:#6FCF97;
+    --danger:#E2574C;
+    --text:#EAF3FB;
+    --text-dim:#7FA4C4;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 700 900'%3E%3Cg fill='none' stroke='%239FC6E8' stroke-opacity='0.35' stroke-width='2'%3E%3Cline x1='60' y1='840' x2='260' y2='560' /%3E%3Cline x1='260' y1='560' x2='120' y2='320' /%3E%3Cline x1='120' y1='320' x2='320' y2='60' /%3E%3Cline x1='260' y1='560' x2='460' y2='320' /%3E%3Cline x1='460' y1='320' x2='320' y2='60' /%3E%3Cline x1='460' y1='320' x2='640' y2='560' /%3E%3Cline x1='640' y1='560' x2='500' y2='840' /%3E%3Ccircle cx='260' cy='560' r='8' fill='%239FC6E8' fill-opacity='0.35' /%3E%3Ccircle cx='120' cy='320' r='8' fill='%239FC6E8' fill-opacity='0.35' /%3E%3Ccircle cx='320' cy='60' r='8' fill='%239FC6E8' fill-opacity='0.35' /%3E%3Ccircle cx='460' cy='320' r='8' fill='%239FC6E8' fill-opacity='0.35' /%3E%3Ccircle cx='640' cy='560' r='8' fill='%239FC6E8' fill-opacity='0.35' /%3E%3Cg stroke-width='6'%3E%3Cline x1='300' y1='700' x2='420' y2='700' /%3E%3Cline x1='300' y1='700' x2='300' y2='800' /%3E%3Cline x1='420' y1='700' x2='420' y2='800' /%3E%3Cline x1='300' y1='800' x2='420' y2='800' /%3E%3Cline x1='330' y1='700' x2='330' y2='800' stroke-width='3' /%3E%3Cline x1='390' y1='700' x2='390' y2='800' stroke-width='3' /%3E%3C/g%3E%3C/g%3E%3C/svg%3E"),
+      radial-gradient(ellipse 900px 700px at 12% 8%, rgba(242,177,52,0.20), transparent 60%),
+      radial-gradient(ellipse 1000px 800px at 92% 96%, rgba(74,127,166,0.30), transparent 60%),
+      radial-gradient(ellipse 1400px 1000px at 50% 50%, transparent 40%, rgba(0,0,0,0.55) 100%),
+      repeating-linear-gradient(90deg, rgba(159,198,232,0.045) 0px, rgba(159,198,232,0.045) 1px, transparent 1px, transparent 32px),
+      linear-gradient(160deg, #14283D 0%, #0A1622 55%, #05090F 100%);
+    background-repeat: repeat, no-repeat, no-repeat, no-repeat, no-repeat, repeat, no-repeat;
+    background-position: 0 0, calc(100% + 60px) calc(100% - 40px), 0 0, 0 0, 0 0, 0 0, 0 0;
+    background-size: 180px 180px, 620px auto, cover, cover, cover, 32px 32px, cover;
+    background-attachment: fixed, fixed, fixed, fixed, fixed, scroll, fixed;
+    background-color:var(--bg);
+    color:var(--text);
+    font-family:'Space Grotesk', sans-serif;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    padding:24px 14px 60px;
+  }
+  .mono{ font-family:'IBM Plex Mono', monospace; }
+  #app{ width:100%; max-width:480px; }
+
+  .corner-btn{
+    position:absolute;
+    top:14px; right:14px;
+    display:flex; align-items:center; gap:6px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    color:var(--text-dim);
+    border:1px solid var(--line);
+    background:rgba(14,32,54,0.7);
+    padding:6px 10px;
+    cursor:pointer;
+    border-radius:2px;
+    z-index:2;
+  }
+  .corner-btn:hover{ color:var(--line-bright); border-color:var(--line-bright); }
+  .corner-btn .badge{
+    background:var(--accent); color:#0E2036; font-weight:700;
+    border-radius:8px; padding:0 5px; font-size:10px;
+  }
+
+  .frame{
+    position:relative;
+    border:1px solid var(--line);
+    border-radius:3px;
+    padding:20px 18px;
+    background:rgba(18,42,69,0.72);
+    box-shadow: 0 0 0 1px rgba(159,198,232,0.05), 0 20px 60px -20px rgba(0,0,0,0.6), inset 0 1px 0 rgba(159,198,232,0.06);
+    backdrop-filter: blur(2px);
+    animation: frameIn .35s ease;
+  }
+  @keyframes frameIn{
+    from{ opacity:0; transform:translateY(6px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+  @keyframes badgePop{
+    0%{ transform:scale(0.7); opacity:0; }
+    60%{ transform:scale(1.06); opacity:1; }
+    100%{ transform:scale(1); }
+  }
+  .frame::before, .frame::after,
+  .frame .tick-br, .frame .tick-bl{
+    content:'';
+    position:absolute;
+    width:10px; height:10px;
+    border-color:var(--accent);
+    border-style:solid;
+  }
+  .frame::before{ top:-1px; left:-1px; border-width:2px 0 0 2px; }
+  .frame::after{ top:-1px; right:-1px; border-width:2px 2px 0 0; }
+  .frame .tick-bl{ bottom:-1px; left:-1px; border-width:0 0 2px 2px; }
+  .frame .tick-br{ bottom:-1px; right:-1px; border-width:0 2px 2px 0; }
+
+  h1{
+    font-size:21px; font-weight:700; margin:0 0 4px;
+    letter-spacing:0.3px;
+    text-shadow: 0 0 20px rgba(159,198,232,0.25);
+  }
+  .subtitle{
+    font-size:13px; color:var(--text-dim); margin:0 0 20px;
+  }
+  .label{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    color:var(--text-dim);
+    letter-spacing:0.5px;
+  }
+
+  .level-card{
+    display:flex; align-items:center; gap:12px;
+    border:1px solid var(--line);
+    padding:12px 14px;
+    margin-bottom:16px;
+    background:linear-gradient(135deg, rgba(74,127,166,0.12), transparent);
+  }
+  .level-card.level-max{
+    border-color:var(--accent);
+    background:linear-gradient(135deg, rgba(242,177,52,0.16), transparent);
+    box-shadow:0 0 20px -8px rgba(242,177,52,0.55);
+  }
+  .level-badge{
+    flex-shrink:0;
+    width:52px; height:52px;
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:12px; font-weight:700;
+    background:radial-gradient(circle at 35% 30%, rgba(255,255,255,0.3), transparent 60%), linear-gradient(135deg, var(--line-bright), var(--line));
+    color:#0E2036;
+    box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), inset 0 -2px 3px rgba(0,0,0,0.35);
+  }
+  .level-max .level-badge{
+    background:radial-gradient(circle at 35% 30%, rgba(255,255,255,0.55), transparent 60%), linear-gradient(135deg, #F2B134, #B9781E);
+    box-shadow: inset 0 1px 1px rgba(255,255,255,0.45), inset 0 -2px 3px rgba(0,0,0,0.3), 0 0 14px -2px rgba(242,177,52,0.8);
+  }
+
+  .stat-row{ display:flex; gap:10px; margin-bottom:18px; }
+  .stat-box{
+    flex:1;
+    border:1px solid var(--line);
+    padding:10px 12px;
+    text-align:left;
+    background:linear-gradient(180deg, rgba(159,198,232,0.05), transparent);
+    transition: border-color .2s ease;
+  }
+  .stat-box .num{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:22px; font-weight:600; color:var(--line-bright);
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0 0 16px rgba(159,198,232,0.35);
+  }
+
+  button{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:14px;
+    background:transparent;
+    color:var(--text);
+    border:1px solid var(--line);
+    padding:12px 14px;
+    cursor:pointer;
+    text-align:left;
+    width:100%;
+    border-radius:2px;
+    transition: border-color .15s ease, background .15s ease, box-shadow .15s ease, transform .1s ease;
+  }
+  button:hover{ border-color:var(--line-bright); background:rgba(159,198,232,0.08); box-shadow:0 0 0 1px rgba(159,198,232,0.15); }
+  button:active{ transform:scale(0.99); }
+  button.primary{
+    border-color:var(--accent);
+    color:var(--accent);
+    font-weight:500;
+    box-shadow: 0 0 18px -6px rgba(242,177,52,0.5);
+  }
+  button.primary:hover{ background:rgba(242,177,52,0.1); box-shadow: 0 0 24px -4px rgba(242,177,52,0.65); }
+  button:disabled{ cursor:default; }
+
+  .cat-grid{ display:flex; flex-direction:column; gap:8px; margin-bottom:18px; }
+  .cat-row{ display:flex; justify-content:space-between; align-items:center; }
+  .cat-row .cnt{ font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--text-dim); }
+
+  .badge-grid{
+    display:grid; grid-template-columns:1fr 1fr; gap:8px;
+  }
+  .badge-card{
+    display:flex; align-items:flex-start; gap:9px;
+    border:1px solid var(--line);
+    padding:9px 10px;
+    border-radius:3px;
+    cursor:pointer;
+    transition: transform .15s ease, border-color .15s ease;
+  }
+  .badge-card:hover{ transform:translateY(-1px); border-color:var(--line-bright); }
+  .badge-card.earned{
+    border-color:var(--accent);
+    background:linear-gradient(135deg, rgba(242,177,52,0.10), transparent);
+    box-shadow: 0 0 16px -8px rgba(242,177,52,0.6);
+  }
+  .badge-card.locked{ opacity:0.55; }
+  .badge-card .badge-icon{
+    font-size:16px; flex-shrink:0; line-height:1;
+    width:32px; height:32px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    background:radial-gradient(circle at 35% 30%, rgba(255,255,255,0.25), transparent 60%), linear-gradient(135deg, var(--line), var(--panel));
+    box-shadow: inset 0 1px 1px rgba(255,255,255,0.15), inset 0 -2px 3px rgba(0,0,0,0.4);
+  }
+  .badge-card.earned .badge-icon{
+    background:radial-gradient(circle at 35% 30%, rgba(255,255,255,0.55), transparent 60%), linear-gradient(135deg, #F2B134, #B9781E);
+    box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), inset 0 -2px 3px rgba(0,0,0,0.35), 0 0 10px -2px rgba(242,177,52,0.7);
+  }
+  .badge-detail{ max-height:0; overflow:hidden; transition:max-height .25s ease; font-size:10.5px; color:var(--text-dim); margin-top:0; }
+  .badge-card.open .badge-detail{ max-height:60px; margin-top:6px; }
+  .badge-pop{ animation: badgePop .5s cubic-bezier(.34,1.56,.64,1); }
+  .badge-shake{ animation: badgeShake .4s ease; }
+  @keyframes badgeShake{
+    0%,100%{ transform:translateX(0); }
+    20%{ transform:translateX(-4px); }
+    40%{ transform:translateX(4px); }
+    60%{ transform:translateX(-3px); }
+    80%{ transform:translateX(3px); }
+  }
+
+  .progress-track{
+    height:6px; background:rgba(159,198,232,0.15);
+    position:relative; margin:16px 0 20px;
+  }
+  .progress-track .fill{
+    position:absolute; top:0; left:0; height:100%;
+    background:var(--line-bright);
+    transition:width .25s ease;
+  }
+  .progress-track .ticks{
+    position:absolute; top:0; left:0; right:0; bottom:0;
+    display:flex; justify-content:space-between;
+  }
+  .progress-track .ticks span{
+    width:1px; background:var(--bg); height:100%;
+  }
+
+  .q-meta{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:14px; }
+  .q-cat{ font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--accent); letter-spacing:0.5px; }
+  .q-score{ font-family:'IBM Plex Mono', monospace; font-size:13px; color:var(--text-dim); }
+
+  .q-text{ font-size:17px; font-weight:500; line-height:1.5; margin-bottom:18px; }
+  .options{ display:flex; flex-direction:column; gap:8px; }
+  .opt{ display:flex; gap:10px; align-items:flex-start; }
+  .opt .idx{ font-family:'IBM Plex Mono', monospace; color:var(--text-dim); flex-shrink:0; }
+  .opt.correct{ border-color:var(--success); color:var(--success); }
+  .opt.wrong{ border-color:var(--danger); color:var(--danger); }
+
+  .feedback{ font-size:14px; line-height:1.6; margin-top:14px; color:var(--text-dim); }
+  .feedback .verdict{ font-weight:600; }
+  .feedback .verdict.ok{ color:var(--success); }
+  .feedback .verdict.no{ color:var(--danger); }
+
+  .next-wrap{ margin-top:16px; }
+  .back-link{
+    display:inline-block; margin-top:18px; font-size:13px; color:var(--text-dim);
+    cursor:pointer; text-decoration:underline;
+  }
+  .divider{ border-top:1px solid var(--line); margin:18px 0; opacity:0.5; }
+</style>
+</head>
+<body>
+<noscript>
+  <div style="max-width:480px;margin:60px auto;padding:20px;font-family:sans-serif;color:#EAF3FB;background:#0E2036;border:1px solid #4A7FA6;border-radius:4px;">
+    <strong>JavaScript ist deaktiviert oder wird nicht ausgeführt.</strong><br><br>
+    Diese App benötigt JavaScript. Bitte öffne die Datei in einem echten Browser (Chrome, Safari, Firefox) — nicht über eine automatische Dateivorschau (z.B. in WhatsApp, Mail-Anhang oder Dateien-App).<br><br>
+    <strong>iPhone:</strong> Datei antippen → Teilen-Symbol → "In Safari öffnen"<br>
+    <strong>Android:</strong> Datei antippen → "Öffnen mit" → Chrome auswählen
+  </div>
+</noscript>
+<div id="jsFallback" style="max-width:480px;margin:60px auto;padding:20px;font-family:sans-serif;color:#EAF3FB;background:#0E2036;border:1px solid #4A7FA6;border-radius:4px;">
+  <strong>Seite lädt oder JavaScript wurde blockiert.</strong><br><br>
+  Falls hier dauerhaft nichts weiter passiert: Diese App benötigt JavaScript. Bitte öffne die Datei explizit in einem echten Browser (Chrome, Safari, Firefox) statt über eine Dateivorschau.<br><br>
+  <strong>iPhone:</strong> Datei antippen → Teilen-Symbol (Quadrat mit Pfeil) → "In Safari öffnen"<br>
+  <strong>Android:</strong> Datei antippen → "Öffnen mit" → Chrome auswählen
+</div>
+<div id="app"></div>
+
+<script>
+document.getElementById('jsFallback').style.display = 'none';
+const QUESTIONS = [
+{c:"Werkstoffkunde",q:"Woraus besteht das Mikrogefüge unlegierter Stähle bei Raumtemperatur hauptsächlich?",o:["Ferrit und Perlit","Austenit und Martensit","Nur Zementit","Nur Ferrit"],a:0,e:"Ferrit (weich) und Perlit (Ferrit + Zementit-Lamellen) bilden das typische Gefüge unlegierter Stähle."},
+{c:"Werkstoffkunde",q:"Was bestimmt der Zugversuch nicht?",o:["Streckgrenze Re","Zugfestigkeit Rm","Bruchdehnung A","Härte nach Brinell"],a:3,e:"Härte wird über eigene Härteprüfverfahren (Brinell, Vickers, Rockwell) ermittelt, nicht über den Zugversuch."},
+{c:"Werkstoffkunde",q:"Wie wird die Zugfestigkeit Rm berechnet?",o:["Rm = Fm / S0","Rm = S0 / Fm","Rm = Fe / S0","Rm = ΔL / L0"],a:0,e:"Rm ist die maximale Zugkraft Fm bezogen auf den Ausgangsquerschnitt S0."},
+{c:"Werkstoffkunde",q:"Welches Härteprüfverfahren nutzt eine Diamantpyramide mit 136° Spitzenwinkel?",o:["Brinell","Vickers","Rockwell C","Kerbschlagbiegeversuch"],a:1,e:"Bei Vickers wird eine vierseitige Diamantpyramide mit 136° eingedrückt und die Diagonale gemessen."},
+{c:"Werkstoffkunde",q:"Wofür steht die 0,2%-Dehngrenze Rp0,2?",o:["Ersatzwert für Streckgrenze bei Werkstoffen ohne ausgeprägte Streckgrenze","Die maximale Bruchdehnung","Der Elastizitätsmodul","Die Kerbschlagarbeit"],a:0,e:"Gehärtete Stähle, Aluminium und Kupfer haben keine ausgeprägte Streckgrenze, daher definiert man Rp0,2 als Ersatz."},
+{c:"Werkstoffkunde",q:"Was prüft der Kerbschlagbiegeversuch nach Charpy?",o:["Die Härte des Werkstoffs","Das Bruchverhalten/die Zähigkeit beim Durchschlagen","Die Zugfestigkeit","Die Schmiedbarkeit"],a:1,e:"Der Pendelhammer durchschlägt die Probe; die verbrauchte Schlagarbeit in Joule zeigt die Zähigkeit."},
+{c:"Werkstoffkunde",q:"Welches zerstörungsfreie Prüfverfahren nutzt Schallwellen zur Fehlersuche in Schweißnähten?",o:["Röntgenprüfung","Ultraschallprüfung","Farbeindringverfahren","Härteprüfung"],a:1,e:"Ultraschallwellen werden an inneren Fehlern reflektiert (Echo) und zeigen Lage und Art des Fehlers."},
+{c:"Werkstoffkunde",q:"Was ist der Zweck des Ausbreitversuchs in der Werkstoffprüfung?",o:["Prüfung der Schmiedbarkeit von Stählen","Prüfung der Härte","Prüfung der Zugfestigkeit","Prüfung des E-Moduls"],a:0,e:"Eine Flachprobe wird bei Rotglut auf 1,5-fache Breite geschmiedet; es darf dabei kein Riss entstehen."},
+{c:"Werkstoffkunde",q:"Was ist der Elastizitätsmodul E?",o:["Der konstante Faktor im proportionalen Bereich von Hookes Gesetz (σ=E·ε)","Die maximale Bruchdehnung","Die Härte nach Vickers","Die Kerbschlagarbeit"],a:0,e:"E beschreibt die Steifigkeit eines Werkstoffs im elastischen Bereich der Spannungs-Dehnungs-Kurve."},
+{c:"Werkstoffkunde",q:"Wodurch entsteht Martensit bei der Wärmebehandlung von Stahl?",o:["Durch langsames Abkühlen aus dem Austenitbereich","Durch schnelles Abschrecken aus dem Austenitbereich (Härten)","Durch Glühen bei niedriger Temperatur","Durch Kaltverformung"],a:1,e:"Beim Härten wird der Stahl aus dem Austenitgebiet schnell abgeschreckt; dabei entsteht das harte, spröde Gefüge Martensit."},
+{c:"Werkstoffkunde",q:"Was passiert beim Vergüten von Stahl?",o:["Nur Härten ohne Anlassen","Härten mit anschließendem Anlassen bei höherer Temperatur","Nur Glühen","Nur Normalisieren"],a:1,e:"Vergüten kombiniert Härten und anschließendes Anlassen, um eine gute Kombination aus Festigkeit und Zähigkeit zu erreichen."},
+{c:"Werkstoffkunde",q:"Wodurch unterscheiden sich Baustähle (unlegierte Stähle) grundsätzlich von legierten Stählen?",o:["Baustähle enthalten keine bzw. nur geringe Legierungselement-Anteile","Baustähle sind immer härter","Baustähle enthalten immer Chrom","Es gibt keinen Unterschied"],a:0,e:"Unlegierte Baustähle (z.B. S235) haben nur geringe Beimengungen anderer Elemente außer Kohlenstoff."},
+{c:"Korrosionsschutz & Kunststoffe",q:"Wie nennt man die dünne Oxidschicht, die Aluminium natürlich vor Korrosion schützt?",o:["Zunderschicht","Passivschicht (Al2O3)","Zinkschicht","Chromatschicht"],a:1,e:"Aluminium bildet von Natur aus eine dünne, festhaftende Al2O3-Oxidschicht als natürlichen Korrosionsschutz."},
+{c:"Korrosionsschutz & Kunststoffe",q:"Was passiert beim Feuerverzinken mit dem Stahlbauteil?",o:["Es wird lackiert","Es wird in schmelzflüssiges Zink (ca. 450°C) getaucht","Es wird poliert","Es wird angelassen"],a:1,e:"Feuerverzinken taucht entrostete Bauteile in ein Zinkbad von rund 450°C; die Zinkschicht schützt danach dauerhaft."},
+{c:"Korrosionsschutz & Kunststoffe",q:"Wodurch unterscheiden sich Thermoplaste von Duroplasten im Erwärmungsverhalten?",o:["Thermoplaste werden weich/schweißbar, Duroplaste nicht","Beide werden gleich weich","Duroplaste schmelzen, Thermoplaste nicht","Kein Unterschied"],a:0,e:"Thermoplaste erweichen bei Erwärmung und sind warm umformbar/schweißbar; Duroplaste bleiben fest und zersetzen sich bei zu starker Hitze."},
+{c:"Korrosionsschutz & Kunststoffe",q:"Welche Aussage zu Elastomeren stimmt?",o:["Sie sind bei Raumtemperatur hart und spröde","Sie sind gummielastisch und dehnbar","Sie sind schweißbar","Sie bestehen aus fadenförmigen unvernetzten Molekülen"],a:1,e:"Elastomere haben weitmaschig vernetzte Makromoleküle und sind dadurch gummielastisch dehnbar."},
+{c:"Korrosionsschutz & Kunststoffe",q:"Wie funktioniert kathodischer Korrosionsschutz mit Opferanode?",o:["Ein unedleres Metall wird mit dem Bauteil verbunden und löst sich stattdessen auf","Das Bauteil wird lackiert","Das Bauteil wird poliert","Es wird eine Fremdspannung angelegt, die das Bauteil zur Anode macht"],a:0,e:"Ein unedleres Metall (z.B. Magnesium) bildet mit dem Stahlbauteil ein galvanisches Element und löst sich als Opferanode auf, während das Bauteil geschützt bleibt."},
+{c:"Korrosionsschutz & Kunststoffe",q:"Was entsteht durch anodische Oxidation bei Aluminium-Bauteilen?",o:["Eine verstärkte, korrosionsschützende Oxidschicht (Eloxalschicht)","Eine Zinkschicht","Eine Lackschicht","Nichts, das Verfahren wirkt nicht bei Aluminium"],a:0,e:"Bei der anodischen Oxidation (Eloxieren) entsteht eine 15-30µm dicke, korrosionsschützende Anodisierschicht aus Al2O3."},
+{c:"Korrosionsschutz & Kunststoffe",q:"Was bedeutet der Oberflächenvorbereitungsgrad \"Sa 2½\" beim Strahlen?",o:["Die Oberfläche ist noch völlig mit Rost bedeckt","Rost/Zunder ist nahezu vollständig entfernt (gängigster Vorbereitungsgrad)","Es wurde nur entfettet, nicht gestrahlt","Die Oberfläche ist lackiert"],a:1,e:"Sa 2½ ist der am häufigsten geforderte Vorbereitungsgrad vor dem Korrosionsschutz; der Rost ist dabei fast vollständig entfernt."},
+{c:"Schweißtechnik & Fügetechnik",q:"Wofür steht die Schweißposition \"PA\"?",o:["Wannenlage","Fallnaht","Steignaht","Überkopfnaht"],a:0,e:"PA(w) bezeichnet die Wannenlage, die einfachste und bevorzugte Schweißposition."},
+{c:"Schweißtechnik & Fügetechnik",q:"Welches Laserschneidverfahren verdampft den Werkstoff im Bereich der Schnittfuge?",o:["Laserstrahl-Schmelzschneiden","Laserstrahl-Sublimierschneiden","Laserstrahl-Brennschneiden","Autogenschneiden"],a:1,e:"Beim Sublimierschneiden wird der Werkstoff durch die Laserenergie direkt verdampft, meist unter Einsatz inerter Schneidgase."},
+{c:"Schweißtechnik & Fügetechnik",q:"Wie groß ist der Anhaltswert für den Schweißlinsendurchmesser d beim Punktschweißen bei gegebener Blechdicke s?",o:["d = 5 · s","d = s / 5","d = 2 · s","d = s²"],a:0,e:"Der Anhaltswert für den Schweißlinsendurchmesser beträgt d = 5·s (Blechdicke s)."},
+{c:"Schweißtechnik & Fügetechnik",q:"Was zeigt eine Einbrandkerbe an einer Schweißnaht an?",o:["Eine korrekt ausgeführte Naht","Unsachgemäßes Schweißen, das die Festigkeit der Verbindung mindert","Eine besonders hohe Nahtgüte","Den planmäßigen Nahtabschluss"],a:1,e:"Einbrandkerben entstehen durch unsachgemäßes Schweißen und mindern die Festigkeit der Schweißverbindung."},
+{c:"Schweißtechnik & Fügetechnik",q:"Welche Fugenform nach DIN EN ISO 2553 wird bei Werkstückdicken über 30mm typischerweise verwendet?",o:["I-Naht","V-Naht","U-Naht","Bördelnaht"],a:2,e:"Die U-Naht wird bei größeren Werkstückdicken (über 30mm) eingesetzt, um das benötigte Schweißgutvolumen zu reduzieren."},
+{c:"Schweißtechnik & Fügetechnik",q:"Wofür wird beim Widerstandspunktschweißen der Kontaktwiderstand genutzt?",o:["Um die Bleche zu kühlen","Um eine örtliche Erwärmung und Verschweißung durch Stromfluss und Druck zu erzeugen","Um Lichtbogen zu erzeugen","Um Zusatzwerkstoff zuzuführen"],a:1,e:"Der Kontaktwiderstand an der Fügestelle erzeugt durch Stromfluss eine lokale Erwärmung; unter Druck über die Elektroden entsteht die Schweißverbindung ganz ohne Lichtbogen oder Zusatzwerkstoff."},
+{c:"Schweißtechnik & Fügetechnik",q:"Was unterscheidet eine Kehlnaht von einer Stumpfnaht grundsätzlich?",o:["Kehlnähte verbinden Bauteile im Winkel (z.B. T-Stoß), Stumpfnähte liegende Bleche stumpf aneinander","Es gibt keinen Unterschied","Stumpfnähte werden nie geprüft","Kehlnähte sind immer stärker belastbar"],a:0,e:"Die Kehlnaht ist typisch für T-Stoß/Eckstoß-Verbindungen, während die Stumpfnaht Werkstücke in einer Ebene stumpf verbindet."},
+{c:"Stahlbau & Konstruktion",q:"Was ist ein Wabenträger?",o:["Ein Walzträger, dessen Steg wabenförmig aufgetrennt und versetzt wieder zusammengeschweißt wird","Ein Träger aus Vollmaterial ohne Öffnungen","Ein Betonträger mit Stahleinlagen","Ein Träger nur für Dachlatten"],a:0,e:"Durch das wabenförmige Auftrennen und Versetzen des Stegs wird die Trägerhöhe bei geringem Mehrgewicht deutlich vergrößert."},
+{c:"Stahlbau & Konstruktion",q:"Wozu dienen Aussteifungen im Stahlhallenbau?",o:["Nur zur Optik","Zur Sicherung der Standsicherheit gegen Horizontalkräfte wie Wind","Zur Wärmedämmung","Zum Blitzschutz"],a:1,e:"Aussteifungen (z.B. Diagonalverbände) nehmen Horizontalkräfte auf und verhindern ein Ausknicken oder Kippen der Konstruktion."},
+{c:"Stahlbau & Konstruktion",q:"Was ist ein Fachwerkträger?",o:["Ein Vollwandträger","Ein Träger aus Ober-/Untergurt und Diagonalen/Pfosten, der Kräfte über Zug-/Druckstäbe abträgt","Nur ein Dekorationselement","Ein Träger ausschließlich aus Holz"],a:1,e:"Beim Fachwerkträger werden die Lasten über ein Stabsystem aus Ober-, Untergurt und Diagonalen als Zug- und Druckkräfte abgetragen, statt über Biegung wie beim Vollwandträger."},
+{c:"Stahlbau & Konstruktion",q:"Welche Aufgabe hat der Stützenfuß?",o:["Verankerung der Stütze im Fundament und Kraftübertragung ins Fundament","Nur die optische Gestaltung","Verbindung zweier Träger","Wärmedämmung der Stütze"],a:0,e:"Der Stützenfuß überträgt die Kräfte aus der Stütze in das Fundament und sichert die Verankerung."},
+{c:"Stahlbau & Konstruktion",q:"Welche Spannungsart entsteht in einem auf Zug beanspruchten geraden Stab?",o:["Normalspannung","Ausschließlich Schubspannung","Biegespannung","Torsionsspannung"],a:0,e:"Bei reiner Zug-/Druckbeanspruchung entsteht eine gleichmäßig verteilte Normalspannung im Querschnitt."},
+{c:"Stahlbau & Konstruktion",q:"Warum werden Träger manchmal gestoßen (Trägerstoß)?",o:["Um die Optik zu verbessern","Weil die erforderliche Trägerlänge die Transport- oder Walzlänge überschreitet","Um Material zu sparen","Nur aus statischen Gründen ohne praktischen Hintergrund"],a:1,e:"Trägerstöße werden nötig, wenn die geforderte Bauteillänge über die verfügbare Walz- oder Transportlänge hinausgeht."},
+{c:"Sicherheit am Bau & Arbeitsschutz",q:"Welche Mindesthöhe muss ein Geländer zur Absturzsicherung haben?",o:["Mindestens 0,5m","Mindestens 1m","Mindestens 2m","Es gibt keine Vorgabe"],a:1,e:"Geländer zur Absturzsicherung müssen mindestens 1m hoch sein und über einen Zwischenholm verfügen."},
+{c:"Sicherheit am Bau & Arbeitsschutz",q:"Wie hoch darf eine Stehleiter, die als Behelfsgerüst genutzt wird, maximal sein?",o:["1m","2m","4m","8m"],a:1,e:"Für Behelfsgerüste dürfen Stehleitern verwendet werden, dabei darf die Gesamthöhe 2m nicht überschritten werden."},
+{c:"Sicherheit am Bau & Arbeitsschutz",q:"Bis zu welcher Höchstlänge kann eine Anlegeleiter im Bedarfsfall verlängert werden?",o:["4m","6m","8m","12m"],a:2,e:"Anlegeleitern können bis 8m verlängert werden, wobei die Überlappung mindestens 1/5 der Gesamtlänge und mindestens 5 Sprossenabstände betragen muss."},
+{c:"Sicherheit am Bau & Arbeitsschutz",q:"Woraus besteht ein Auffanggurt der Form A nach DIN EN 361?",o:["Nur aus einem Seil","Aus Schulter-, Brust- und Beingurten, mindestens 40mm breit","Aus einem einfachen Hüftgurt","Aus einer Kette"],a:1,e:"Der Auffanggurt Form A besteht aus Schulter-, Brust- und Beingurten, die mindestens 40mm breit sein müssen."},
+{c:"Sicherheit am Bau & Arbeitsschutz",q:"Welches Verhältnis von Schmalseite zu Belaghöhe (h:b) gilt für die Standsicherheit von Fahrgerüsten im Freien?",o:["h:b ≤ 3:1","h:b ≤ 6:1","h:b ≤ 10:1","Es gibt keine Grenze"],a:0,e:"Im Freien gilt h:b ≤ 3:1, in geschlossenen Räumen h:b ≤ 4:1, um die Standsicherheit von Fahrgerüsten zu gewährleisten."},
+{c:"Sicherheit am Bau & Arbeitsschutz",q:"Wofür steht der AGW-Wert im Arbeitsschutz?",o:["Allgemeiner Gefahren-Warnwert","Arbeitsplatzgrenzwert für gesundheitsgefährdende Stoffe in der Luft","Ausbildungs-Grundwissen","Arbeitsgeräte-Wartungswert"],a:1,e:"Der AGW-Wert gibt die höchstzulässige Konzentration eines Schadstoffs in der Luft am Arbeitsplatz an (Angabe oft in ppm)."},
+{c:"Sicherheit am Bau & Arbeitsschutz",q:"Wie müssen verbrauchte Kühlschmierstoffe, Altöle und Lösungsmittel im Betrieb behandelt werden?",o:["Über die Kanalisation entsorgen","Getrennt sammeln und fachgerecht recyceln/entsorgen","Im Hausmüll entsorgen","Verdunsten lassen"],a:1,e:"Diese Stoffe gelten als Sonderabfälle und dürfen nicht in Kanalisation, Gewässer oder Erdboden gelangen, sondern müssen getrennt gesammelt werden."},
+{c:"Türen, Tore & Fenster",q:"Welche Torart lässt sich platzsparend seitlich an der Wand entlang öffnen?",o:["Drehtor","Schiebetor","Rolltor","Sektionaltor"],a:1,e:"Das Schiebetor wird seitlich an der Wand entlanggeführt und benötigt dadurch keinen Schwenkbereich."},
+{c:"Türen, Tore & Fenster",q:"Welches Tor besteht aus einzelnen, gelenkig verbundenen Paneelen, die waagerecht unter die Decke laufen?",o:["Schwingtor","Sektionaltor","Rolltor","Drehfalttor"],a:1,e:"Das Sektionaltor besteht aus mehreren gelenkig verbundenen Paneelen (Sektionen), die platzsparend unter die Decke geführt werden."},
+{c:"Türen, Tore & Fenster",q:"Was unterscheidet ein Rolltor konstruktiv von einem Sektionaltor?",o:["Es gibt keinen Unterschied","Das Rolltor besteht aus schmalen Lamellen, die sich zu einer Rolle über der Toröffnung aufwickeln","Das Rolltor öffnet immer nach außen","Das Rolltor ist nie automatisiert"],a:1,e:"Beim Rolltor wickeln sich schmale Lamellen zu einer kompakten Rolle über der Öffnung auf, statt wie beim Sektionaltor unter die Decke zu fahren."},
+{c:"Türen, Tore & Fenster",q:"Worauf muss bei Automatiktüren besonders geachtet werden?",o:["Auf ein möglichst schnelles Schließen ohne Sensorik","Auf Sicherheitseinrichtungen wie Lichtschranken gegen Quetsch- und Scherstellen","Auf eine möglichst hohe Schließkraft","Nur auf die Optik"],a:1,e:"Automatiktüren benötigen Sicherheitseinrichtungen (z.B. Lichtschranken, Sensorik), um Personen vor Quetsch- und Scherstellen zu schützen."},
+{c:"Türen, Tore & Fenster",q:"Was bezeichnet die \"Bewegungsrichtung\" einer Tür?",o:["Ob sie nach innen oder außen öffnet","Die Farbe der Tür","Das verwendete Schloss","Den Einbauort"],a:0,e:"Die Bewegungsrichtung gibt an, ob die Tür beim Öffnen nach innen oder außen schwenkt."},
+{c:"Schlösser & Sicherheitstechnik",q:"Wofür steht das Kurzzeichen \"PZ\" bei Einsteckschlössern nach DIN 18251?",o:["Buntbartschloss","Zylinderschloss vorgerichtet für Profilzylinder","Zuhaltungsschloss","Schloss für Badtüren"],a:1,e:"PZ kennzeichnet ein Einsteckschloss, das für den Einbau eines Profilzylinders vorgerichtet ist."},
+{c:"Schlösser & Sicherheitstechnik",q:"Was erhöht beim Chubbschloss die Schließsicherheit gegenüber einem einfachen Zuhaltungsschloss?",o:["Ein zusätzliches Vorhängeschloss","Mindestens 4 lamellenartige, flache Zuhaltungsblätter statt einer einfachen Zuhaltung","Ein größerer Schlüssel","Eine dickere Schlossblende"],a:1,e:"Beim Chubbschloss ersetzen mindestens 4 Zuhaltungsblätter mit Zuhaltungsfenstern die einfache Zuhaltung und erschweren das Aufsperren mit Sperrhaken erheblich."},
+{c:"Schlösser & Sicherheitstechnik",q:"Wie ist die Bezeichnung \"Schloss DIN 18251 - BB 55 R-1\" zu lesen?",o:["Buntbartschloss, Dornmaß 55mm, Rechtsschloss, leichtes Innentürschloss Klasse 1","Zylinderschloss, Dornmaß 55mm, Linksschloss Klasse 1","Zuhaltungsschloss ohne Dornmaß-Angabe","Badtürschloss Klasse 1"],a:0,e:"BB steht für Buntbartschloss, 55 für das Dornmaß, R für Rechtsschloss, und die 1 für die leichte Innentürschloss-Klasse."},
+{c:"Schlösser & Sicherheitstechnik",q:"Was bewirkt eine Mittelbruchbesatzung bei einem Buntbartschloss?",o:["Sie verringert die Sicherheit","Sie erhöht die Schließsicherheit durch profilierte Blechstreifen auf dem Schlossboden","Sie ersetzt den Schlüssel komplett","Sie dient nur der Dekoration"],a:1,e:"Die Mittelbruchbesatzung erhöht durch profilierte Blechstreifen die Schließsicherheit, da nur noch passende Mittelbartschlüssel funktionieren."},
+{c:"Treppen",q:"Wie nennt man die unterste Stufe einer Treppe?",o:["Austrittsstufe","Antrittsstufe","Podeststufe","Setzstufe"],a:1,e:"Die unterste Stufe einer Treppe wird als Antrittsstufe bezeichnet, die oberste als Austrittsstufe."},
+{c:"Treppen",q:"Was ist ein Krümmling am Handlauf einer Treppe?",o:["Eine senkrechte oder waagerechte Richtungsänderung im Handlauf","Der unterste Handlaufpfosten","Ein zusätzliches Geländerelement aus Glas","Die Bezeichnung für die Trittstufe"],a:0,e:"Krümmlinge bezeichnen Richtungsänderungen im Handlaufverlauf, sowohl senkrecht als auch waagerecht."},
+{c:"Treppen",q:"Welchen Vorteil bieten Setzstufen zwischen den Trittstufen?",o:["Sie erhöhen nur die Optik","Sie vermindern die Durchbiegung der Trittstufen und erhöhen die Sicherheit gegen Durchfallen","Sie sparen Material","Sie sind für Außentreppen nicht zulässig"],a:1,e:"Setzstufen vermindern die Durchbiegung der Trittstufen und verhindern, dass Gegenstände zwischen den Stufen durchfallen können."},
+{c:"Treppen",q:"Wie wird bei einer Spindeltreppe die Kraft übertragen?",o:["Über zwei seitliche Wangen","Über ein vertikales Hauptragglied (die Spindel), an dem die Stufen auskragend befestigt sind","Über ein Stahlbetonfundament allein","Über Seilzüge"],a:1,e:"Bei der Spindeltreppe sind die Stufen auskragend an der vertikalen Spindel befestigt, die die Kräfte abträgt."},
+{c:"Treppen",q:"Wie werden Treppenabsätze zwischen zwei Treppenläufen bezeichnet?",o:["Wangen","Podeste","Krümmlinge","Setzstufen"],a:1,e:"Treppenabsätze zwischen Treppenläufen werden als Podeste bezeichnet."},
+{c:"DIN EN 1090 / WPK",q:"Wofür steht die Abkürzung WPK?",o:["Werksprüfungs-Kommission","Werkseigene Produktionskontrolle","Weiterbildungs-Pflichtkurs","Werkstoffprüfkatalog"],a:1,e:"WPK = Werkseigene Produktionskontrolle: die dokumentierte Eigenüberwachung der Fertigung durch den Hersteller selbst."},
+{c:"DIN EN 1090 / WPK",q:"Wofür ist eine zertifizierte WPK die Voraussetzung?",o:["Für den Meisterbrief","Für die CE-Kennzeichnung tragender Stahl-/Alubauteile","Für die Gewerbeanmeldung","Für die Handwerksrolle"],a:1,e:"Ohne funktionierende, zertifizierte WPK ist keine CE-Kennzeichnung nach EN 1090 und damit kein Marktzugang möglich."},
+{c:"DIN EN 1090 / WPK",q:"Wie viele Ausführungsklassen (EXC) definiert die EN 1090-2?",o:["2 (EXC1-EXC2)","3 (EXC1-EXC3)","4 (EXC1-EXC4)","5 (EXC1-EXC5)"],a:2,e:"Es gibt EXC1 bis EXC4, wobei EXC1 die niedrigsten und EXC4 die höchsten Anforderungen stellt."},
+{c:"DIN EN 1090 / WPK",q:"Welche Ausführungsklasse ist für die meisten gewerblichen Stahlbauten (mittleres Risiko) typisch?",o:["EXC1","EXC2 oder EXC3","Immer EXC4","Keine, freiwillig"],a:1,e:"Die große Masse aller Stahlbauten fällt in die mittleren Klassen EXC2 und EXC3."},
+{c:"DIN EN 1090 / WPK",q:"Ab welcher Ausführungsklasse müssen Bauteile grundsätzlich gekennzeichnet und rückverfolgbar sein?",o:["Ab EXC1","Ab EXC2","Erst ab EXC4","Rückverfolgbarkeit ist nie Pflicht"],a:1,e:"Ab EXC2 ist Kennzeichnung/Rückverfolgbarkeit vorgeschrieben; ab EXC3 muss sie lückenlos dokumentiert sein."},
+{c:"DIN EN 1090 / WPK",q:"Welche zwei Normteile bilden zusammen die Grundlage für Konformität und CE-Kennzeichnung im Stahlbau?",o:["EN 1090-1 und EN 1090-2","DIN 18800-1 und -2","ISO 9001 und ISO 14001","EN 1090-2 und EN 1090-4"],a:0,e:"EN 1090-1 regelt das Konformitätsbewertungsverfahren, EN 1090-2 die technischen Regeln zur Ausführung von Stahltragwerken."},
+{c:"DIN EN 1090 / WPK",q:"Wie läuft die Erstzertifizierung der WPK typischerweise ab?",o:["Nur eine einmalige Prüfung ohne Wiederholung","Erstinspektion, dann jährliche Überwachung, alle 3 Jahre Rezertifizierung","Nur Selbsterklärung ohne externe Stelle","Prüfung nur bei Schadensfall"],a:1,e:"Nach der Erstinspektion durch eine notifizierte Stelle folgen jährliche Überwachungsaudits und nach 3 Jahren eine vollständige Rezertifizierung."},
+{c:"DIN EN 1090 / WPK",q:"Welches Wissensniveau der Schweißaufsicht fordert EN 1090-2 typischerweise für EXC2 bei S235-S355 bis 25mm?",o:["Umfassend (C)","Spezifisch (S)","Basis (B)","Kein Nachweis nötig"],a:2,e:"Für EXC2 mit gängigen Baustählen bis 25mm genügt das Basis-Wissensniveau (B) nach ISO 14731."},
+{c:"DIN EN 1090 / WPK",q:"Was passiert, wenn ein Betrieb sowohl EXC2- als auch EXC3-Aufträge annimmt?",o:["Das WPK-System muss auf EXC3 ausgerichtet sein","Es reicht EXC2 für alle Aufträge","Beide Klassen brauchen kein WPK-System","EXC3-Aufträge werden automatisch abgelehnt"],a:0,e:"Das WPK-System muss immer auf die höchste regelmäßig ausgeführte Klasse ausgerichtet sein."},
+{c:"DIN EN 1090 / WPK",q:"Wer legt die Ausführungsklasse (EXC) für ein Bauteil fest?",o:["Der Metallbauer selbst nach Gefühl","Der Tragwerksplaner im Ausführungsplan","Die Berufsgenossenschaft","Der Endkunde"],a:1,e:"Die Klasse wird vom Tragwerksplaner festgelegt und muss vom Metallbauer im Auftragsformular dokumentiert werden."},
+{c:"DIN EN 1090 / WPK",q:"Wie verändert sich der Prüfumfang (NDT) bei Quer-Stumpfnähten von EXC2 zu EXC3?",o:["Er bleibt gleich","Er verdoppelt sich (z.B. von 10% auf 20%)","Er entfällt komplett","Er wird nur bei Aluminium erhöht"],a:1,e:"In EXC3 verdoppeln sich die Prüfsätze gegenüber EXC2, z.B. bei Quer-Stumpfnähten von 10% auf 20%."},
+{c:"DIN EN 1090 / WPK",q:"Was löst die Umstellung der Produktion auf eine höhere Ausführungsklasse nach EN 1090-1 aus?",o:["Nichts, WPK bleibt gleich","Eine erneute Erstprüfung des Produkts","Automatische Rückstufung","Eine Steuerbefreiung"],a:1,e:"Nach DIN EN 1090-1, Abschnitt 6.2.1 löst der Wechsel auf eine höhere Klasse eine erneute Erstprüfung (ITT) aus."},
+{c:"Kommunikation & Präsentation",q:"Von wem stammt die These \"Man kann nicht nicht kommunizieren\"?",o:["Paul Watzlawick","Sigmund Freud","Carl Rogers","Niklas Luhmann"],a:0,e:"Der Kommunikationswissenschaftler Paul Watzlawick prägte dieses zentrale Axiom der Kommunikation."},
+{c:"Kommunikation & Präsentation",q:"Auf welchen zwei Ebenen findet menschliche Kommunikation statt?",o:["Inhaltsebene und Beziehungsebene","Nur auf der Inhaltsebene","Nur auf der Beziehungsebene","Verbale und schriftliche Ebene"],a:0,e:"Kommunikation läuft immer auf der Inhaltsebene (Informationsaustausch) und der Beziehungsebene (emotionale Verbindung) gleichzeitig ab."},
+{c:"Kommunikation & Präsentation",q:"Was gehört zu den Techniken des \"Aktiven Zuhörens\"?",o:["Den Gesprächspartner einfach reden lassen ohne Reaktion","Wiederholen, Spiegeln, Nachfragen und Zusammenfassen","Nur Zustimmung äußern","Das Thema wechseln"],a:1,e:"Aktives Zuhören umfasst u.a. Wiederholen, Spiegeln der Gefühle, Nachfragen, Zusammenfassen, Klären und Weiterführen."},
+{c:"Kommunikation & Präsentation",q:"Was versteht man unter Metakommunikation?",o:["Kommunikation ausschließlich per Telefon","Die Kommunikation über die Kommunikation, um einen gestörten Prozess zu klären","Nonverbale Kommunikation","Kommunikation in großen Gruppen"],a:1,e:"Bei der Metakommunikation verlassen die Gesprächspartner die inhaltliche Ebene und betrachten den Kommunikationsprozess selbst, um Konflikte zu klären."},
+{c:"Kommunikation & Präsentation",q:"In welche drei Phasen gliedert sich eine Präsentation?",o:["Vorbereitungs-, Durchführungs- und Nachbereitungsphase","Nur Vorbereitung und Durchführung","Einleitung und Schluss","Planung und Kontrolle"],a:0,e:"Eine Präsentation gliedert sich in Vorbereitungsphase, Durchführungsphase und Nachbereitungsphase."},
+{c:"Auftragsabwicklung & Kalkulation",q:"Was ist das Ziel der Zuschlagskalkulation im Handwerksbetrieb?",o:["Nur den Materialpreis zu ermitteln","Einen Angebotspreis zu ermitteln, der alle Kosten sowie einen Gewinnzuschlag deckt","Den Stundenlohn der Mitarbeiter festzulegen","Die Steuerlast zu berechnen"],a:1,e:"Die Zuschlagskalkulation schlägt auf die Einzelkosten prozentuale Zuschläge für Gemeinkosten und Gewinn auf, um einen wirtschaftlich tragfähigen Angebotspreis zu ermitteln."},
+{c:"Auftragsabwicklung & Kalkulation",q:"Wie werden die Selbstkosten eines Auftrags grundsätzlich ermittelt?",o:["Einzelkosten (Material + Fertigung) plus Gemeinkostenzuschläge","Nur die Materialkosten","Nur die Lohnkosten der Mitarbeiter","Der Verkaufspreis der Konkurrenz"],a:0,e:"Die Selbstkosten ergeben sich aus den Einzelkosten (Material- und Fertigungseinzelkosten) zuzüglich der anteiligen Gemeinkosten."},
+{c:"Auftragsabwicklung & Kalkulation",q:"Wozu dient die Nachkalkulation eines Auftrags?",o:["Um vor Auftragsbeginn den Preis zu schätzen","Um nach Fertigstellung die tatsächlichen Kosten/den tatsächlichen Gewinn zu ermitteln und mit der Vorkalkulation zu vergleichen","Um den Kunden zu informieren","Um die Steuererklärung vorzubereiten"],a:1,e:"Die Nachkalkulation zeigt nach Auftragsabschluss den tatsächlich erzielten Gewinn und deckt Abweichungen zur Vorkalkulation auf."},
+{c:"Auftragsabwicklung & Kalkulation",q:"In welcher ungefähren Größenordnung liegt der branchenübliche Gewinn- und Wagniszuschlag im Handwerk auf die Selbstkosten?",o:["Etwa 50-70%","Etwa 3-15%","0%, da nicht erlaubt","Etwa 100%"],a:1,e:"Branchenüblich wird ein Gewinn- und Wagniszuschlag von etwa 3 bis 15% auf die Selbstkosten kalkuliert, je nach Gewerk und Betrieb."},
+{c:"Auftragsabwicklung & Kalkulation",q:"Was ist der Zweck technischer Arbeitspläne in der Arbeitsvorbereitung?",o:["Nur zur Dokumentation nach Auftragsende","Planung von Arbeitsschritten, Material- und Zeitbedarf vor Fertigungsbeginn","Werbung für den Betrieb","Erstellung der Rechnung"],a:1,e:"Technische Arbeitspläne organisieren im Voraus die Reihenfolge der Arbeitsschritte sowie den Material- und Zeitbedarf, um die Fertigung effizient zu steuern."},
+{c:"Auftragsabwicklung & Kalkulation",q:"Was versteht man unter der \"Vergabe von Unteraufträgen\"?",o:["Die Übertragung von Teilleistungen eines Auftrags an einen anderen (Sub-)Unternehmer","Die Kündigung eines Mitarbeiters","Die Ablehnung eines Kundenauftrags","Die interne Umverteilung von Werkzeugen"],a:0,e:"Bei der Vergabe von Unteraufträgen werden Teilleistungen eines Gesamtauftrags an spezialisierte Subunternehmer übertragen, z.B. bei fehlenden eigenen Kapazitäten."},
+{c:"Auftragsabwicklung & Kalkulation",q:"Was umfasst die Planung von Betriebs- und Lagerausstattung/Logistik in einem Metallbaubetrieb?",o:["Nur die Buchhaltung","Materialfluss, Lagerhaltung, Transportmittel und Maschinenausstattung planen","Nur die Personalplanung","Nur den Kundenkontakt"],a:1,e:"Hierzu gehört die Planung, wie Material, Werkzeuge und Bauteile im Betrieb gelagert, bewegt und für die Fertigung bereitgestellt werden."},
+{c:"Betriebsführung & Recht",q:"Wofür steht die Abkürzung VOB?",o:["Verordnung für Bauüberwachung","Vergabe- und Vertragsordnung für Bauleistungen","Verband der Baubranche","Vertrag ohne Bedingungen"],a:1,e:"VOB steht für Vergabe- und Vertragsordnung für Bauleistungen, das zentrale Regelwerk für Bauaufträge in Deutschland."},
+{c:"Betriebsführung & Recht",q:"Was regelt VOB/A im Gegensatz zu VOB/B?",o:["VOB/A regelt die Vergabe/Ausschreibung, VOB/B die Vertragsbedingungen zur Ausführung","VOB/A und VOB/B regeln dasselbe","VOB/A regelt nur technische Details","VOB/A gilt nur bei privaten Aufträgen"],a:0,e:"VOB/A regelt den Ablauf der Vergabe (Ausschreibung), VOB/B die Vertragsbedingungen während der Ausführung (z.B. Abnahme, Gewährleistung)."},
+{c:"Betriebsführung & Recht",q:"Was regelt VOB/C?",o:["Die technischen Vertragsbedingungen (ATV) je Gewerk","Nur die Bezahlung der Mitarbeiter","Die Kündigungsfristen","Die Gewerbeanmeldung"],a:0,e:"VOB/C enthält die Allgemeinen Technischen Vertragsbedingungen (ATV), die Qualitäts- und Ausführungsstandards je Gewerk festlegen."},
+{c:"Betriebsführung & Recht",q:"Wie lange beträgt die gesetzliche Gewährleistungsfrist bei Bauwerken nach BGB üblicherweise?",o:["1 Jahr","2 Jahre","5 Jahre","10 Jahre"],a:2,e:"Nach BGB beträgt die Gewährleistungsfrist bei Bauwerken 5 Jahre (nach VOB/B sind es dagegen üblicherweise 4 Jahre)."},
+{c:"Betriebsführung & Recht",q:"Was ist ein zentrales Ziel betrieblicher Umweltschutzmaßnahmen?",o:["Kosten durch Verzicht auf Schutzmaßnahmen zu senken","Vermeidung/Verminderung von Schadstoffen sowie sachgerechte Entsorgung und Recycling","Nur gesetzliche Mindestanforderungen zu ignorieren","Die Produktionsmenge zu maximieren ohne Rücksicht auf Umwelt"],a:1,e:"Umweltschutz im Betrieb zielt auf Vermeidung, Verminderung und fachgerechte Entsorgung/Recycling von Schad- und Reststoffen ab."},
+{c:"Betriebsführung & Recht",q:"Was ist der Zweck von Marketing im Handwerksbetrieb?",o:["Nur Werbeanzeigen zu schalten","Kunden zu gewinnen und zu binden sowie den Betrieb am Markt sichtbar zu positionieren","Ausschließlich die Buchhaltung zu vereinfachen","Die Materialkosten zu senken"],a:1,e:"Marketing umfasst alle Maßnahmen, um Kunden zu gewinnen und zu binden und den Betrieb erfolgreich am Markt zu positionieren."}
+];
+
+const CATS = ["Werkstoffkunde","Korrosionsschutz & Kunststoffe","Schweißtechnik & Fügetechnik","Stahlbau & Konstruktion","Sicherheit am Bau & Arbeitsschutz","Türen, Tore & Fenster","Schlösser & Sicherheitstechnik","Treppen","DIN EN 1090 / WPK","Kommunikation & Präsentation","Auftragsabwicklung & Kalkulation","Betriebsführung & Recht"];
+const STORAGE_KEY = "metallbau-quiz-progress";
+const CUSTOM_KEY = "metallbau-quiz-custom-questions";
+const MATERIALS_KEY = "metallbau-quiz-materials";
+let CUSTOM_QUESTIONS = [];
+let MATERIALS = [];
+const BEREICHE = [
+  {name:"Bereich 1 · Metallbautechnik", cats:["Werkstoffkunde","Korrosionsschutz & Kunststoffe","Schweißtechnik & Fügetechnik","Stahlbau & Konstruktion","Sicherheit am Bau & Arbeitsschutz","Türen, Tore & Fenster","Schlösser & Sicherheitstechnik","Treppen","DIN EN 1090 / WPK","Kommunikation & Präsentation"]},
+  {name:"Bereich 2 · Auftragsabwicklung", cats:["Auftragsabwicklung & Kalkulation"]},
+  {name:"Bereich 3 · Betriebsführung", cats:["Betriebsführung & Recht"]}
+];
+
+const SCHEDULE = [
+  {date:"2026-09-04", topic:"Selbststudium", dozent:"", cat:null},
+  {date:"2026-09-05", topic:"Selbststudium", dozent:"", cat:null},
+  {date:"2026-09-11", topic:"Selbststudium", dozent:"", cat:null},
+  {date:"2026-09-12", topic:"Selbststudium", dozent:"", cat:null},
+  {date:"2026-09-18", topic:"DIN EN 1090 und WPK", dozent:"Andreas Schmidt", cat:"DIN EN 1090 / WPK"},
+  {date:"2026-09-19", topic:"WPK Prüfprotokoll", dozent:"Andreas Schmidt", cat:"DIN EN 1090 / WPK"},
+  {date:"2026-09-25", topic:"Personalentwicklungs- und -führungskonzepte", dozent:"Henry Hozak", cat:"Betriebsführung & Recht"},
+  {date:"2026-09-26", topic:"Selbststudium", dozent:"", cat:null},
+  {date:"2026-10-02", topic:"Grundlagen Konstruktion (Treppen)", dozent:"Andreas Schmidt", cat:"Treppen"},
+  {date:"2026-10-09", topic:"Selbststudium", dozent:"", cat:null},
+  {date:"2026-10-10", topic:"Selbststudium", dozent:"", cat:null},
+  {date:"2026-10-16", topic:"Ermittlung betrieblicher Kosten", dozent:"Annett Exner", cat:"Auftragsabwicklung & Kalkulation"},
+  {date:"2026-10-17", topic:"Vergabe von Unteraufträgen", dozent:"Annett Exner", cat:"Auftragsabwicklung & Kalkulation"},
+  {date:"2026-10-23", topic:"Vergabe von Unteraufträgen", dozent:"Annett Exner", cat:"Auftragsabwicklung & Kalkulation"},
+  {date:"2026-10-24", topic:"Vor- und Nachkalkulation", dozent:"Annett Exner", cat:"Auftragsabwicklung & Kalkulation"},
+  {date:"2026-10-30", topic:"Konstruktion (Treppen)", dozent:"Andreas Schmidt", cat:"Treppen"},
+  {date:"2026-11-06", topic:"Vor- und Nachkalkulation", dozent:"Annett Exner", cat:"Auftragsabwicklung & Kalkulation"},
+  {date:"2026-11-07", topic:"Vor- und Nachkalkulation", dozent:"Annett Exner", cat:"Auftragsabwicklung & Kalkulation"},
+  {date:"2026-11-13", topic:"Konstruktion (Treppen)", dozent:"Andreas Schmidt", cat:"Treppen"},
+  {date:"2026-11-14", topic:"Konstruktion (Treppen)", dozent:"Andreas Schmidt", cat:"Treppen"},
+  {date:"2026-11-20", topic:"CAD/HiCAD 3D Anwendung", dozent:"Thomas Wichert", cat:null},
+  {date:"2026-11-21", topic:"CAD/HiCAD 3D Anwendung", dozent:"Thomas Wichert", cat:null},
+  {date:"2026-11-27", topic:"Konsultation", dozent:"Andreas Schmidt", cat:null},
+  {date:"2026-11-28", topic:"Konsultation", dozent:"Andreas Schmidt", cat:null},
+  {date:"2026-12-04", topic:"Statik", dozent:"Ulf Tschoban", cat:null},
+  {date:"2026-12-05", topic:"BIM im Stahlbau", dozent:"Thomas Wichert", cat:null},
+  {date:"2026-12-11", topic:"Vor- und Nachkalkulation", dozent:"Annett Exner", cat:"Auftragsabwicklung & Kalkulation"},
+  {date:"2026-12-12", topic:"Marketing im Handwerk", dozent:"Henry Hozak", cat:"Betriebsführung & Recht"},
+  {date:"2026-12-18", topic:"Vor- und Nachkalkulation", dozent:"Annett Exner", cat:"Auftragsabwicklung & Kalkulation"},
+  {date:"2026-12-19", topic:"Vor- und Nachkalkulation", dozent:"Annett Exner", cat:"Auftragsabwicklung & Kalkulation"},
+  {date:"2027-01-08", topic:"Konsultation", dozent:"Ulf Tschoban", cat:null},
+  {date:"2027-01-09", topic:"Konsultation", dozent:"Annett Exner", cat:null},
+  {date:"2027-01-15", topic:"Konsultation", dozent:"Andreas Schmidt", cat:null},
+  {date:"2027-01-16", topic:"Konsultation", dozent:"Thomas Wichert", cat:null},
+  {date:"2027-01-22", topic:"Meisterprüfung Teil II", dozent:"", cat:null}
+];
+
+function parseISO(s){ return new Date(s+"T00:00:00"); }
+function todayMidnight(){ const d=new Date(); d.setHours(0,0,0,0); return d; }
+function isoWeekKey(d){
+  const date = new Date(d);
+  const day = (date.getDay()+6)%7;
+  date.setDate(date.getDate()-day);
+  return date.toISOString().slice(0,10);
+}
+function formatDateShort(s){
+  const d = parseISO(s);
+  const days = ["So","Mo","Di","Mi","Do","Fr","Sa"];
+  const dd = String(d.getDate()).padStart(2,'0');
+  const mm = String(d.getMonth()+1).padStart(2,'0');
+  return `${days[d.getDay()]} ${dd}.${mm}.`;
+}
+function getNextWeekBlock(){
+  const today = todayMidnight();
+  const upcoming = SCHEDULE.filter(e=> parseISO(e.date) >= today && e.topic !== "Selbststudium");
+  if(upcoming.length===0) return [];
+  upcoming.sort((a,b)=> parseISO(a.date)-parseISO(b.date));
+  const firstKey = isoWeekKey(parseISO(upcoming[0].date));
+  return upcoming.filter(e=> isoWeekKey(parseISO(e.date))===firstKey);
+}
+
+let state = { totalScore:0, bestStreak:0, played:0, correct:0, missed:{}, catStats:{}, totalAnswered:0, everCorrect:{}, customAdded:0, materialsUploaded:0, daysUsed:{}, recommendedPlayed:0, reviewPlayed:0, weekPlanUsed:0, perfectRounds:0, everHadFiveMissed:false, playedAfter22:false, playedBefore7:false, badges:{}, highestLevelSeen:1 };
+
+const LEVELS = [
+  {lvl:1, xp:0, title:"Lehrling"},
+  {lvl:2, xp:100, title:"Auszubildender"},
+  {lvl:3, xp:250, title:"Fachwerker"},
+  {lvl:4, xp:450, title:"Geselle"},
+  {lvl:5, xp:700, title:"Facharbeiter"},
+  {lvl:6, xp:1000, title:"Erfahrener Geselle"},
+  {lvl:7, xp:1400, title:"Vorarbeiter"},
+  {lvl:8, xp:1900, title:"Technische Fachkraft"},
+  {lvl:9, xp:2500, title:"Prüfungsreif"},
+  {lvl:10, xp:3200, title:"Meistertauglich"}
+];
+
+function getLevelInfo(score){
+  let current = LEVELS[0];
+  for(const l of LEVELS){ if(score>=l.xp) current=l; else break; }
+  const idx = LEVELS.indexOf(current);
+  const next = LEVELS[idx+1];
+  if(!next){
+    const over = score - current.xp;
+    const prestige = Math.floor(over/1000);
+    const intoNext = over - prestige*1000;
+    return { lvl:current.lvl, title:current.title + (prestige>0 ? " ★"+prestige : ""), xpInto:intoNext, xpNeeded:1000, progressPct:Math.min(100, Math.round((intoNext/1000)*100)), atMax:true };
+  }
+  const xpInto = score - current.xp;
+  const xpNeeded = next.xp - current.xp;
+  return { lvl:current.lvl, title:current.title, nextTitle:next.title, xpInto, xpNeeded, progressPct:Math.min(100, Math.round((xpInto/xpNeeded)*100)), atMax:false };
+}
+
+const ROMAN = ["I","II","III","IV","V","VI","VII","VIII","IX","X"];
+
+const BADGE_DEFS = [];
+[50,100,200,350,500,750,1000,1500,2500,5000].forEach((m,i)=> BADGE_DEFS.push({id:'score_'+m, name:'Punkte-Sammler '+ROMAN[i], desc:m+' Punkte insgesamt erreicht', icon:'⭐', check:s=>s.totalScore>=m}));
+[3,5,7,10,12,15,20,25].forEach((m,i)=> BADGE_DEFS.push({id:'streak_'+m, name:'Serientäter '+ROMAN[i], desc:m+' richtige Antworten in Folge', icon:'🔥', check:s=>s.bestStreak>=m}));
+[1,3,5,10,20,35,50,75].forEach((m,i)=> BADGE_DEFS.push({id:'played_'+m, name:'Fleißiger Lerner '+ROMAN[i], desc:m+' Durchläufe abgeschlossen', icon:'📘', check:s=>s.played>=m}));
+[10,25,50,100,200,350,500,750].forEach((m,i)=> BADGE_DEFS.push({id:'answered_'+m, name:'Fragensteller '+ROMAN[i], desc:m+' Fragen insgesamt beantwortet', icon:'❓', check:s=>(s.totalAnswered||0)>=m}));
+[10,25,50,100,200,350,500,750].forEach((m,i)=> BADGE_DEFS.push({id:'correct_'+m, name:'Treffsicher '+ROMAN[i], desc:m+' Fragen insgesamt richtig beantwortet', icon:'✅', check:s=>s.correct>=m}));
+CATS.forEach(c=> BADGE_DEFS.push({id:'fach_'+c, name:'Fachkundig: '+c, desc:'Mind. 70% Trefferquote in "'+c+'" (ab 5 Versuchen)', icon:'🔧', check:s=>{const st=s.catStats[c]; return !!st && st.attempts>=5 && (st.correct/st.attempts)>=0.7;}}));
+CATS.forEach(c=> BADGE_DEFS.push({id:'meister_'+c, name:'Meister: '+c, desc:'Alle Fragen aus "'+c+'" mindestens einmal richtig beantwortet', icon:'🏆', check:s=>{const idxs=allQuestions().map((q,i)=>({q,i})).filter(o=>o.q.c===c).map(o=>o.i); return idxs.length>0 && idxs.every(i=>s.everCorrect && s.everCorrect[i]);}}));
+BADGE_DEFS.push({id:'all_cats_tried', name:'Allrounder', desc:'In jeder Kategorie mindestens eine Frage beantwortet', icon:'🧭', check:s=>CATS.every(c=>s.catStats[c] && s.catStats[c].attempts>0)});
+BADGE_DEFS.push({id:'complete_all', name:'Vollständig durchgearbeitet', desc:'Jede Frage im Fragenpool mindestens einmal richtig beantwortet', icon:'📚', check:s=>{const all=allQuestions(); return all.length>0 && all.every((q,i)=>s.everCorrect && s.everCorrect[i]);}});
+BADGE_DEFS.push({id:'perfect_round', name:'Perfekte Runde', desc:'Ein Durchlauf mit mind. 10 Fragen ohne einen einzigen Fehler', icon:'💯', check:s=>(s.perfectRounds||0)>=1});
+[1,5,10,20].forEach((m,i)=> BADGE_DEFS.push({id:'ownq_'+m, name:'Autor '+ROMAN[i], desc:m+' eigene Frage(n) hinzugefügt', icon:'✍️', check:s=>(s.customAdded||0)>=m}));
+[1,5,10].forEach((m,i)=> BADGE_DEFS.push({id:'mat_'+m, name:'Archivar '+ROMAN[i], desc:m+' Datei(en) hochgeladen', icon:'📎', check:s=>(s.materialsUploaded||0)>=m}));
+[3,7,14,30].forEach((m,i)=> BADGE_DEFS.push({id:'days_'+m, name:'Dranbleiber '+ROMAN[i], desc:'An '+m+' verschiedenen Tagen gelernt', icon:'📅', check:s=>Object.keys(s.daysUsed||{}).length>=m}));
+[1,5,10,20].forEach((m,i)=> BADGE_DEFS.push({id:'rec_'+m, name:'Schwachstellen-Jäger '+ROMAN[i], desc:m+' Runde(n) "Empfohlenes Lernen" abgeschlossen', icon:'🎯', check:s=>(s.recommendedPlayed||0)>=m}));
+[1,5,10].forEach((m,i)=> BADGE_DEFS.push({id:'rev_'+m, name:'Nachsitzer '+ROMAN[i], desc:m+' Runde(n) Fehler-Wiederholung abgeschlossen', icon:'🔁', check:s=>(s.reviewPlayed||0)>=m}));
+[1,5,10].forEach((m,i)=> BADGE_DEFS.push({id:'week_'+m, name:'Vorausdenker '+ROMAN[i], desc:m+'x über die Wochenplan-Vorschau gelernt', icon:'📆', check:s=>(s.weekPlanUsed||0)>=m}));
+BADGE_DEFS.push({id:'error_free', name:'Fehlerfrei', desc:'Alle offenen Fehler abgearbeitet (nachdem es mind. 5 gab)', icon:'🧹', check:s=>!!s.everHadFiveMissed && Object.keys(s.missed||{}).length===0});
+BADGE_DEFS.push({id:'night_owl', name:'Nachteule', desc:'Nach 22 Uhr gelernt', icon:'🌙', check:s=>!!s.playedAfter22});
+BADGE_DEFS.push({id:'early_bird', name:'Frühaufsteher', desc:'Vor 7 Uhr gelernt', icon:'🌅', check:s=>!!s.playedBefore7});
+BADGE_DEFS.push({id:'meta_bereich1', name:'Metallbautechnik-Experte', desc:'Fachkundig in allen Themen aus Bereich 1', icon:'🛠️', check:s=>BEREICHE[0].cats.every(c=>{const st=s.catStats[c]; return !!st && st.attempts>=5 && (st.correct/st.attempts)>=0.7;})});
+BADGE_DEFS.push({id:'meta_bereich23', name:'Betriebswirt', desc:'Fachkundig in Auftragsabwicklung & Betriebsführung', icon:'💼', check:s=>['Auftragsabwicklung & Kalkulation','Betriebsführung & Recht'].every(c=>{const st=s.catStats[c]; return !!st && st.attempts>=5 && (st.correct/st.attempts)>=0.7;})});
+BADGE_DEFS.push({id:'meta_allmeister', name:'Vollprofi', desc:'In jeder Kategorie den Meister-Titel erreicht', icon:'👑', check:s=>CATS.every(c=>{const idxs=allQuestions().map((q,i)=>({q,i})).filter(o=>o.q.c===c).map(o=>o.i); return idxs.length>0 && idxs.every(i=>s.everCorrect && s.everCorrect[i]);})});
+[10,25,50,90].forEach((m,i)=> BADGE_DEFS.push({id:'collector_'+m, name:'Abzeichen-Sammler '+ROMAN[i], desc:m+' Abzeichen insgesamt gesammelt', icon:'🎖️', meta:'count', threshold:m}));
+
+function evaluateBadges(s){
+  const earnedNow = {};
+  BADGE_DEFS.forEach(b=>{ if(b.meta!=='count' && b.check(s)) earnedNow[b.id]=true; });
+  const countSoFar = Object.keys(earnedNow).length;
+  BADGE_DEFS.forEach(b=>{ if(b.meta==='count' && countSoFar>=b.threshold) earnedNow[b.id]=true; });
+  return earnedNow;
+}
+
+function checkBadges(){
+  const earnedNow = evaluateBadges(state);
+  const newly = [];
+  Object.keys(earnedNow).forEach(id=>{
+    if(!state.badges[id]){ state.badges[id] = Date.now(); newly.push(id); }
+  });
+  return newly;
+}
+let session = null;
+let view = "home";
+
+async function loadState(){
+  try{
+    if(window.storage){
+      const r = await window.storage.get(STORAGE_KEY);
+      if(r && r.value){ state = JSON.parse(r.value); }
+    } else {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(raw){ state = JSON.parse(raw); }
+    }
+  }catch(e){ /* no saved state yet */ }
+  try{
+    const rawCustom = localStorage.getItem(CUSTOM_KEY);
+    if(rawCustom){ CUSTOM_QUESTIONS = JSON.parse(rawCustom); }
+  }catch(e){ /* no custom questions yet */ }
+  try{
+    const rawMat = localStorage.getItem(MATERIALS_KEY);
+    if(rawMat){ MATERIALS = JSON.parse(rawMat); }
+  }catch(e){ /* no materials yet */ }
+  state.missed = state.missed || {};
+  state.catStats = state.catStats || {};
+  state.totalAnswered = state.totalAnswered || 0;
+  state.everCorrect = state.everCorrect || {};
+  state.customAdded = state.customAdded || 0;
+  state.materialsUploaded = state.materialsUploaded || 0;
+  state.daysUsed = state.daysUsed || {};
+  state.recommendedPlayed = state.recommendedPlayed || 0;
+  state.reviewPlayed = state.reviewPlayed || 0;
+  state.weekPlanUsed = state.weekPlanUsed || 0;
+  state.perfectRounds = state.perfectRounds || 0;
+  state.badges = state.badges || {};
+  state.highestLevelSeen = state.highestLevelSeen || 1;
+  render();
+}
+
+async function saveState(){
+  try{
+    if(window.storage){ await window.storage.set(STORAGE_KEY, JSON.stringify(state)); }
+    else { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+  }catch(e){ /* storage unavailable, continue in-memory */ }
+}
+
+function saveCustomQuestions(){
+  try{ localStorage.setItem(CUSTOM_KEY, JSON.stringify(CUSTOM_QUESTIONS)); }
+  catch(e){ /* storage unavailable */ }
+}
+
+function saveMaterials(){
+  try{ localStorage.setItem(MATERIALS_KEY, JSON.stringify(MATERIALS)); }
+  catch(e){ /* storage unavailable, likely quota exceeded */ }
+}
+
+function allQuestions(){
+  return QUESTIONS.concat(CUSTOM_QUESTIONS);
+}
+
+function computeCategoryAccuracy(){
+  const acc = {};
+  Object.keys(state.catStats).forEach(c=>{
+    const s = state.catStats[c];
+    if(s && s.attempts>0){ acc[c] = s.correct/s.attempts; }
+  });
+  return acc;
+}
+
+function buildRecommendedPool(){
+  const ALL = allQuestions();
+  const acc = computeCategoryAccuracy();
+  const catsWithData = Object.keys(acc);
+  let pool = [...new Set(Object.keys(state.missed).map(k=>parseInt(k)).filter(i=>ALL[i]))];
+  if(catsWithData.length===0){ return pool; }
+  const sorted = catsWithData.slice().sort((a,b)=>acc[a]-acc[b]);
+  const TARGET = 15;
+  for(const c of sorted){
+    if(pool.length>=TARGET) break;
+    const catIdxs = ALL.map((q,i)=>i).filter(i=>ALL[i].c===c && !pool.includes(i));
+    catIdxs.sort(()=>Math.random()-0.5);
+    for(const idx of catIdxs){
+      if(pool.length>=TARGET) break;
+      pool.push(idx);
+    }
+  }
+  return pool;
+}
+
+function startSession(catFilter, reviewMode, recommendedMode, fromWeek){
+  const ALL = allQuestions();
+  let pool;
+  if(recommendedMode){
+    pool = buildRecommendedPool();
+    if(pool.length===0){ return; }
+  } else if(reviewMode){
+    pool = Object.keys(state.missed).map(k=>parseInt(k)).filter(i=>ALL[i]);
+    if(pool.length===0){ return; }
+  } else {
+    pool = ALL.map((q,i)=>i);
+    if(Array.isArray(catFilter)){ pool = pool.filter(i=>catFilter.includes(ALL[i].c)); }
+    else if(catFilter){ pool = pool.filter(i=>ALL[i].c===catFilter); }
+  }
+  session = {
+    queue: pool.sort(()=>Math.random()-0.5),
+    wrongQueue: [],
+    total: pool.length,
+    answered: 0,
+    score: 0,
+    streak: 0,
+    mistakes: 0,
+    currentIdx: null,
+    locked: false,
+    reviewMode: !!reviewMode,
+    recommendedMode: !!recommendedMode,
+    fromWeekPlan: !!fromWeek,
+    newBadges: []
+  };
+  view = "quiz";
+  nextQuestion();
+}
+
+function nextQuestion(){
+  session.locked = false;
+  if(session.queue.length===0){
+    if(session.wrongQueue.length>0){
+      session.queue = session.wrongQueue.sort(()=>Math.random()-0.5);
+      session.wrongQueue = [];
+    } else {
+      finishSession();
+      return;
+    }
+  }
+  session.currentIdx = session.queue.shift();
+  render();
+}
+
+function finishSession(){
+  state.played += 1;
+  state.totalScore += session.score;
+  const now = new Date();
+  const dayKey = now.toISOString().slice(0,10);
+  state.daysUsed[dayKey] = true;
+  const hr = now.getHours();
+  if(hr>=22 || hr<5) state.playedAfter22 = true;
+  if(hr<7) state.playedBefore7 = true;
+  if(session.total>=10 && session.mistakes===0){ state.perfectRounds = (state.perfectRounds||0)+1; }
+  if(session.recommendedMode) state.recommendedPlayed = (state.recommendedPlayed||0)+1;
+  else if(session.reviewMode) state.reviewPlayed = (state.reviewPlayed||0)+1;
+  if(session.fromWeekPlan) state.weekPlanUsed = (state.weekPlanUsed||0)+1;
+  const newLevelInfo = getLevelInfo(state.totalScore);
+  if(newLevelInfo.lvl > (state.highestLevelSeen||1)){
+    session.leveledUp = newLevelInfo;
+    state.highestLevelSeen = newLevelInfo.lvl;
+  }
+  session.newBadges = checkBadges();
+  view = "results";
+  saveState();
+  render();
+}
+
+function selectAnswer(i){
+  if(session.locked) return;
+  session.locked = true;
+  const q = allQuestions()[session.currentIdx];
+  const correct = i===q.a;
+  if(!state.catStats[q.c]) state.catStats[q.c] = {attempts:0, correct:0};
+  state.catStats[q.c].attempts += 1;
+  state.totalAnswered = (state.totalAnswered||0) + 1;
+  if(correct){
+    session.score += 10 + Math.min(session.streak,5)*2;
+    session.streak += 1;
+    state.correct += 1;
+    state.catStats[q.c].correct += 1;
+    state.everCorrect[session.currentIdx] = true;
+    if(state.bestStreak < session.streak) state.bestStreak = session.streak;
+    delete state.missed[session.currentIdx];
+  } else {
+    session.streak = 0;
+    session.mistakes += 1;
+    session.wrongQueue.push(session.currentIdx);
+    state.missed[session.currentIdx] = true;
+  }
+  if(Object.keys(state.missed).length>=5) state.everHadFiveMissed = true;
+  session.answered += 1;
+  render(i);
+}
+
+function render(selectedWrongIdx){
+  const app = document.getElementById('app');
+  if(view==="home"){ app.innerHTML = homeHTML(); bindHome(); return; }
+  if(view==="quiz"){ app.innerHTML = quizHTML(selectedWrongIdx); bindQuiz(selectedWrongIdx); return; }
+  if(view==="results"){ app.innerHTML = resultsHTML(); bindResults(); return; }
+  if(view==="addq"){ app.innerHTML = addqHTML(); bindAddq(); return; }
+  if(view==="materials"){ app.innerHTML = materialsHTML(); bindMaterials(); return; }
+  if(view==="badges"){ app.innerHTML = badgesHTML(); bindBadges(); return; }
+}
+
+function homeHTML(){
+  const missedCount = Object.keys(state.missed).length;
+  const catCount = c => allQuestions().filter(q=>q.c===c).length;
+  const weekBlock = getNextWeekBlock();
+  const weekCats = [...new Set(weekBlock.map(e=>e.cat).filter(Boolean))];
+  const acc = computeCategoryAccuracy();
+  const hasRecommendData = Object.keys(acc).length>0 || missedCount>0;
+  const li = getLevelInfo(state.totalScore);
+  return `
+  <div class="frame"><span class="tick-br"></span><span class="tick-bl"></span>
+    <div class="corner-btn" data-goto-materials="1">
+      <span aria-hidden="true">📎</span> Dateien ${MATERIALS.length>0 ? `<span class="badge">${MATERIALS.length}</span>` : ''}
+    </div>
+    <div class="label" style="margin-top:2px; margin-right:90px;">MEISTERPRÜFUNG METALL · HWK POTSDAM</div>
+    <h1>Lern-App Metallbautechnik</h1>
+    <div class="subtitle">Vorbereitung auf Meisterprüfung Teil II</div>
+
+    <div class="level-card ${li.lvl>=10 ? 'level-max' : ''}">
+      <div class="level-badge mono">LVL ${li.lvl}</div>
+      <div style="flex:1;">
+        <div style="font-size:15px; font-weight:600;">${li.title}</div>
+        <div class="progress-track" style="margin:6px 0 2px;">
+          <div class="fill" style="width:${li.progressPct}%"></div>
+        </div>
+        <div class="mono" style="font-size:10.5px; color:var(--text-dim);">${li.atMax ? li.xpInto+' / '+li.xpNeeded+' XP bis ★'+(Math.floor((state.totalScore-3200)/1000)+1) : li.xpInto+' / '+li.xpNeeded+' XP bis Level '+(li.lvl+1)+' — '+li.nextTitle}</div>
+      </div>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat-box"><div class="label">Punkte gesamt</div><div class="num">${state.totalScore}</div></div>
+      <div class="stat-box"><div class="label">Beste Serie</div><div class="num">${state.bestStreak}</div></div>
+      <div class="stat-box"><div class="label">Durchläufe</div><div class="num">${state.played}</div></div>
+    </div>
+
+    ${weekBlock.length>0 ? `
+    <div class="label" style="margin-bottom:8px;">NÄCHSTE SCHULWOCHE</div>
+    <div class="cat-grid" style="margin-bottom:10px;">
+      ${weekBlock.map(e=>`
+      <div style="border:1px solid var(--line); padding:10px 12px;">
+        <div style="font-size:13px; font-weight:500; margin-bottom:4px;">${formatDateShort(e.date)} — ${e.topic}</div>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="mono" style="font-size:11px; color:var(--text-dim);">${e.dozent}</span>
+          ${e.cat ? `<span data-week-cat="${e.cat}" style="cursor:pointer; font-size:12px; color:var(--accent);">Jetzt vorlernen →</span>` : `<span class="mono" style="font-size:11px; color:var(--text-dim);">kein Quiz-Thema hinterlegt</span>`}
+        </div>
+      </div>`).join('')}
+    </div>
+    ${weekCats.length>1 ? `
+    <button data-week-multi="${weekCats.join('|')}" style="margin-bottom:18px;">
+      <div class="cat-row"><span>Alle Themen dieser Woche</span><span class="cnt mono">→</span></div>
+    </button>` : `<div style="margin-bottom:18px;"></div>`}
+    ` : ''}
+
+    <button class="primary" data-start="all" style="margin-bottom:16px;">
+      <div class="cat-row"><span>Alle Themen mischen</span><span class="cnt mono">${allQuestions().length} Fragen</span></div>
+    </button>
+
+    ${hasRecommendData ? `
+    <button data-start-recommended="1" style="margin-bottom:12px; border-color:var(--accent); color:var(--accent);">
+      <div class="cat-row"><span>Empfohlenes Lernen (deine Schwachstellen)</span><span class="cnt mono">gemischt</span></div>
+    </button>` : `
+    <div class="subtitle" style="margin-bottom:12px;">Empfohlenes Lernen erscheint, sobald du ein paar Runden gespielt hast.</div>`}
+
+    ${missedCount>0 ? `
+    <button data-start-review="1" style="margin-bottom:18px; border-color:var(--danger); color:var(--danger);">
+      <div class="cat-row"><span>Falsch beantwortete wiederholen</span><span class="cnt mono">${missedCount} Fragen</span></div>
+    </button>` : ''}
+
+    ${BEREICHE.map(b=>`
+      <div class="label" style="margin-bottom:8px;">${b.name.toUpperCase()}</div>
+      <div class="cat-grid" style="margin-bottom:18px;">
+        ${b.cats.map(c=>`
+        <button data-start="${c}">
+          <div class="cat-row"><span>${c}</span><span class="cnt mono">${catCount(c)} Fragen</span></div>
+        </button>`).join('')}
+      </div>
+    `).join('')}
+
+    ${catCount("Eigene Fragen")>0 ? `
+    <div class="label" style="margin-bottom:8px;">EIGENE ERGÄNZUNGEN</div>
+    <div class="cat-grid" style="margin-bottom:18px;">
+      <button data-start="Eigene Fragen">
+        <div class="cat-row"><span>Eigene Fragen</span><span class="cnt mono">${catCount("Eigene Fragen")} Fragen</span></div>
+      </button>
+    </div>` : ''}
+
+    <div class="divider"></div>
+    <button data-goto-badges="1" style="margin-bottom:8px; border-color:var(--accent);">
+      <div class="cat-row"><span>🎖️ Abzeichen</span><span class="cnt mono">${Object.keys(state.badges||{}).length} / ${BADGE_DEFS.length}</span></div>
+    </button>
+    <button data-goto-addq="1">
+      <div class="cat-row"><span>Eigene Frage hinzufügen</span><span class="cnt mono">${CUSTOM_QUESTIONS.length} eigene</span></div>
+    </button>
+  </div>`;
+}
+
+function bindHome(){
+  document.querySelectorAll('[data-start]').forEach(b=>{
+    b.onclick = ()=>{
+      const v = b.getAttribute('data-start');
+      startSession(v==="all" ? null : v, false);
+    };
+  });
+  document.querySelectorAll('[data-start-multi]').forEach(b=>{
+    b.onclick = ()=>{
+      const cats = b.getAttribute('data-start-multi').split('|');
+      startSession(cats, false, false);
+    };
+  });
+  document.querySelectorAll('[data-week-cat]').forEach(el=>{
+    el.onclick = ()=> startSession(el.getAttribute('data-week-cat'), false, false, true);
+  });
+  document.querySelectorAll('[data-week-multi]').forEach(b=>{
+    b.onclick = ()=>{
+      const cats = b.getAttribute('data-week-multi').split('|');
+      startSession(cats, false, false, true);
+    };
+  });
+  const rev = document.querySelector('[data-start-review]');
+  if(rev){ rev.onclick = ()=> startSession(null, true); }
+  const rec = document.querySelector('[data-start-recommended]');
+  if(rec){ rec.onclick = ()=> startSession(null, false, true); }
+  const addq = document.querySelector('[data-goto-addq]');
+  if(addq){ addq.onclick = ()=>{ view="addq"; render(); }; }
+  const mat = document.querySelector('[data-goto-materials]');
+  if(mat){ mat.onclick = ()=>{ view="materials"; render(); }; }
+  const badges = document.querySelector('[data-goto-badges]');
+  if(badges){ badges.onclick = ()=>{ view="badges"; render(); }; }
+}
+
+function quizHTML(selectedWrongIdx){
+  const q = allQuestions()[session.currentIdx];
+  const pct = Math.round((session.answered/session.total)*100);
+  const answeredThis = session.locked;
+  return `
+  <div class="frame"><span class="tick-br"></span><span class="tick-bl"></span>
+    <div class="q-meta">
+      <span class="q-cat mono">${q.c}${session.reviewMode && !session.recommendedMode ? ' · WIEDERHOLUNG' : ''}${session.recommendedMode ? ' · EMPFOHLEN' : ''}</span>
+      <span class="q-score mono">${session.score} PKT${session.streak>1 ? ' · SERIE '+session.streak : ''}</span>
+    </div>
+    <div class="progress-track">
+      <div class="fill" style="width:${pct}%"></div>
+    </div>
+    <div class="q-text">${q.q}</div>
+    <div class="options" id="opts">
+      ${q.o.map((opt,i)=>{
+        let cls = '';
+        if(answeredThis){
+          if(i===q.a) cls='correct';
+          else if(i===selectedWrongIdx) cls='wrong';
+        }
+        return `<button class="${cls}" data-opt="${i}" ${answeredThis?'disabled':''}>
+          <span class="opt"><span class="idx mono">${String.fromCharCode(65+i)}</span><span>${opt}</span></span>
+        </button>`;
+      }).join('')}
+    </div>
+    ${answeredThis ? `
+    <div class="feedback">
+      <span class="verdict ${selectedWrongIdx===q.a?'ok':'no'}">${selectedWrongIdx===q.a?'Richtig':'Nicht ganz'}</span>
+      — ${q.e}
+    </div>
+    <div class="next-wrap"><button class="primary" id="nextBtn">Weiter</button></div>
+    ` : ''}
+    <div class="back-link" id="quitLink">Zurück zur Übersicht</div>
+  </div>`;
+}
+
+function bindQuiz(selectedWrongIdx){
+  if(!session.locked){
+    document.querySelectorAll('[data-opt]').forEach(b=>{
+      b.onclick = ()=> selectAnswer(parseInt(b.getAttribute('data-opt')));
+    });
+  } else {
+    const nb = document.getElementById('nextBtn');
+    if(nb) nb.onclick = nextQuestion;
+  }
+  const q = document.getElementById('quitLink');
+  if(q) q.onclick = ()=>{ view="home"; render(); };
+}
+
+function resultsHTML(){
+  const newBadges = (session.newBadges||[]).map(id=>BADGE_DEFS.find(b=>b.id===id)).filter(Boolean);
+  const lu = session.leveledUp;
+  return `
+  <div class="frame"><span class="tick-br"></span><span class="tick-bl"></span>
+    <div class="label">DURCHLAUF ABGESCHLOSSEN</div>
+    <h1>${session.score} Punkte</h1>
+    <div class="subtitle">${session.total} Fragen beantwortet ${session.recommendedMode ? '(Empfohlenes Lernen)' : (session.reviewMode ? '(Wiederholung)' : '')}</div>
+    ${lu ? `
+    <div class="level-card ${lu.lvl>=10 ? 'level-max' : ''} badge-pop" style="margin-top:10px;">
+      <div class="level-badge mono">LVL ${lu.lvl}</div>
+      <div>
+        <div style="font-size:11px; color:var(--text-dim); letter-spacing:0.5px;">LEVEL AUFGESTIEGEN</div>
+        <div style="font-size:16px; font-weight:700;">${lu.lvl>=10 ? '🏅 ' : ''}${lu.title}${lu.lvl>=10 ? ' — bereit für die Prüfung!' : ''}</div>
+      </div>
+    </div>` : ''}
+    <div class="divider"></div>
+    <div class="stat-row">
+      <div class="stat-box"><div class="label">Punkte gesamt</div><div class="num">${state.totalScore}</div></div>
+      <div class="stat-box"><div class="label">Beste Serie</div><div class="num">${state.bestStreak}</div></div>
+    </div>
+    ${newBadges.length>0 ? `
+    <div class="label" style="margin:16px 0 8px;">NEUE ABZEICHEN FREIGESCHALTET</div>
+    <div class="cat-grid" style="margin-bottom:16px;">
+      ${newBadges.map(b=>`
+      <div class="badge-card earned badge-pop">
+        <span class="badge-icon">${b.icon}</span>
+        <div><div style="font-size:13px; font-weight:500;">${b.name}</div><div style="font-size:12px; color:var(--text-dim);">${b.desc}</div></div>
+      </div>`).join('')}
+    </div>` : ''}
+    <button class="primary" id="againBtn" style="margin-bottom:8px;">Neuer Durchlauf</button>
+    <div class="back-link" id="homeLink">Zurück zur Übersicht</div>
+  </div>`;
+}
+
+function bindResults(){
+  document.getElementById('againBtn').onclick = ()=>{ view="home"; render(); };
+  document.getElementById('homeLink').onclick = ()=>{ view="home"; render(); };
+}
+
+function addqHTML(){
+  return `
+  <div class="frame"><span class="tick-br"></span><span class="tick-bl"></span>
+    <div class="label">EIGENE FRAGE (WIRD NUR AUF DIESEM GERÄT GESPEICHERT)</div>
+    <h1>Frage hinzufügen</h1>
+    <div class="subtitle">Für Ergänzungen aus aktuellen Skripten oder Unterricht</div>
+
+    <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:16px;">
+      <div>
+        <div class="label" style="margin-bottom:4px;">KATEGORIE</div>
+        <select id="fCat" style="width:100%;">
+          ${CATS.map(c=>`<option value="${c}">${c}</option>`).join('')}
+          <option value="Eigene Fragen">Eigene Fragen (neue Kategorie)</option>
+        </select>
+      </div>
+      <div>
+        <div class="label" style="margin-bottom:4px;">FRAGE</div>
+        <textarea id="fQ" rows="2" style="width:100%; font-family:'Space Grotesk',sans-serif; background:transparent; color:var(--text); border:1px solid var(--line); padding:8px;"></textarea>
+      </div>
+      <div>
+        <div class="label" style="margin-bottom:4px;">ANTWORTOPTIONEN (RICHTIGE ZUERST MARKIEREN)</div>
+        ${[0,1,2,3].map(i=>`
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+          <input type="radio" name="fCorrect" value="${i}" ${i===0?'checked':''}>
+          <input type="text" id="fOpt${i}" placeholder="Option ${String.fromCharCode(65+i)}" style="flex:1; background:transparent; color:var(--text); border:1px solid var(--line); padding:8px;">
+        </div>`).join('')}
+      </div>
+      <div>
+        <div class="label" style="margin-bottom:4px;">ERKLÄRUNG (OPTIONAL)</div>
+        <textarea id="fExpl" rows="2" style="width:100%; font-family:'Space Grotesk',sans-serif; background:transparent; color:var(--text); border:1px solid var(--line); padding:8px;"></textarea>
+      </div>
+      <div id="fErr" style="font-size:13px; color:var(--danger); display:none;"></div>
+    </div>
+    <button class="primary" id="fSave" style="margin-bottom:16px;">Frage speichern</button>
+
+    ${CUSTOM_QUESTIONS.length>0 ? `
+    <div class="divider"></div>
+    <div class="label" style="margin-bottom:8px;">GESPEICHERTE EIGENE FRAGEN (${CUSTOM_QUESTIONS.length})</div>
+    <div class="cat-grid" style="margin-bottom:16px;">
+      ${CUSTOM_QUESTIONS.map((q,i)=>`
+      <div style="border:1px solid var(--line); padding:10px 12px; display:flex; justify-content:space-between; gap:8px; align-items:flex-start;">
+        <span style="font-size:13px; line-height:1.4;">${q.q}</span>
+        <span data-del-custom="${i}" style="cursor:pointer; color:var(--danger); font-family:'IBM Plex Mono',monospace; font-size:12px; flex-shrink:0;">löschen</span>
+      </div>`).join('')}
+    </div>` : ''}
+
+    <div class="back-link" id="backHome">Zurück zur Übersicht</div>
+  </div>`;
+}
+
+function bindAddq(){
+  document.getElementById('backHome').onclick = ()=>{ view="home"; render(); };
+  document.getElementById('fSave').onclick = ()=>{
+    const cat = document.getElementById('fCat').value;
+    const qtext = document.getElementById('fQ').value.trim();
+    const opts = [0,1,2,3].map(i=>document.getElementById('fOpt'+i).value.trim());
+    const correctRadio = document.querySelector('input[name="fCorrect"]:checked');
+    const expl = document.getElementById('fExpl').value.trim();
+    const errBox = document.getElementById('fErr');
+    if(!qtext || opts.some(o=>!o)){
+      errBox.textContent = "Bitte Frage und alle vier Antwortoptionen ausfüllen.";
+      errBox.style.display = "block";
+      return;
+    }
+    errBox.style.display = "none";
+    CUSTOM_QUESTIONS.push({ c: cat, q: qtext, o: opts, a: parseInt(correctRadio.value), e: expl || "Keine Erklärung hinterlegt." });
+    saveCustomQuestions();
+    state.customAdded = (state.customAdded||0) + 1;
+    checkBadges();
+    saveState();
+    render();
+  };
+  document.querySelectorAll('[data-del-custom]').forEach(el=>{
+    el.onclick = ()=>{
+      const i = parseInt(el.getAttribute('data-del-custom'));
+      CUSTOM_QUESTIONS.splice(i,1);
+      saveCustomQuestions();
+      render();
+    };
+  });
+}
+
+function humanSize(bytes){
+  if(bytes < 1024) return bytes + " B";
+  if(bytes < 1024*1024) return Math.round(bytes/1024) + " KB";
+  return (bytes/(1024*1024)).toFixed(1) + " MB";
+}
+
+function materialsHTML(){
+  return `
+  <div class="frame"><span class="tick-br"></span><span class="tick-bl"></span>
+    <div class="label">SKRIPTE, FOTOS &amp; UNTERLAGEN (NUR AUF DIESEM GERÄT)</div>
+    <h1>Dateien</h1>
+    <div class="subtitle">Skripte von Herrn Schmidt, Frau Exner &amp; Co. ablegen</div>
+
+    <input type="file" id="fileInput" multiple style="display:none;">
+    <button class="primary" id="pickFile" style="margin-bottom:8px;">+ Datei hochladen</button>
+    <div id="matErr" style="font-size:13px; color:var(--danger); margin-bottom:12px; display:none;"></div>
+    <div class="subtitle" style="margin-bottom:16px;">Bilder, PDFs & Dokumente bis ca. 3 MB pro Datei. Wird nur lokal im Browser gespeichert, nicht hochgeladen.</div>
+
+    ${MATERIALS.length===0 ? `<div class="subtitle">Noch keine Dateien abgelegt.</div>` : `
+    <div class="cat-grid" style="margin-bottom:8px;">
+      ${MATERIALS.map((m,i)=>`
+      <div style="border:1px solid var(--line); padding:10px 12px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+          <span style="font-size:13px; overflow-wrap:anywhere;">${m.name}</span>
+          <span data-del-mat="${i}" style="cursor:pointer; color:var(--danger); font-family:'IBM Plex Mono',monospace; font-size:12px; flex-shrink:0;">löschen</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-top:4px;">
+          <span class="mono" style="font-size:11px; color:var(--text-dim);">${humanSize(m.size)}</span>
+          ${m.dataUrl ? `<a href="${m.dataUrl}" download="${m.name}" style="font-size:11px; color:var(--line-bright);">öffnen</a>` : `<span class="mono" style="font-size:11px; color:var(--text-dim);">nur Notiz, Datei zu groß zum Speichern</span>`}
+        </div>
+      </div>`).join('')}
+    </div>`}
+
+    <div class="back-link" id="backHome" style="margin-top:12px;">Zurück zur Übersicht</div>
+  </div>`;
+}
+
+function bindMaterials(){
+  document.getElementById('backHome').onclick = ()=>{ view="home"; render(); };
+  const input = document.getElementById('fileInput');
+  document.getElementById('pickFile').onclick = ()=> input.click();
+  input.onchange = ()=>{
+    const errBox = document.getElementById('matErr');
+    errBox.style.display = "none";
+    const files = Array.from(input.files || []);
+    const MAX_BYTES = 3*1024*1024;
+    let pending = files.length;
+    if(pending===0) return;
+    files.forEach(file=>{
+      const meta = { name: file.name, size: file.size, dataUrl: null };
+      if(file.size > MAX_BYTES){
+        MATERIALS.push(meta);
+        state.materialsUploaded = (state.materialsUploaded||0) + 1;
+        pending -= 1;
+        if(pending===0){ saveMaterials(); checkBadges(); saveState(); render(); }
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = ()=>{
+        meta.dataUrl = reader.result;
+        MATERIALS.push(meta);
+        state.materialsUploaded = (state.materialsUploaded||0) + 1;
+        pending -= 1;
+        if(pending===0){ saveMaterials(); checkBadges(); saveState(); render(); }
+      };
+      reader.onerror = ()=>{
+        MATERIALS.push(meta);
+        state.materialsUploaded = (state.materialsUploaded||0) + 1;
+        pending -= 1;
+        if(pending===0){ saveMaterials(); checkBadges(); saveState(); render(); }
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+  document.querySelectorAll('[data-del-mat]').forEach(el=>{
+    el.onclick = ()=>{
+      const i = parseInt(el.getAttribute('data-del-mat'));
+      MATERIALS.splice(i,1);
+      saveMaterials();
+      render();
+    };
+  });
+}
+
+function badgeProgressText(b, s){
+  if(b.meta==='count'){
+    const otherEarned = BADGE_DEFS.filter(x=>x.meta!=='count' && x.check(s)).length;
+    return otherEarned+' / '+b.threshold+' Abzeichen gesammelt';
+  }
+  const parts = b.id.split('_');
+  const prefix = parts[0];
+  const num = parts[1];
+  if(prefix==='score') return s.totalScore+' / '+num+' Punkten';
+  if(prefix==='streak') return s.bestStreak+' / '+num+' Serie';
+  if(prefix==='played') return s.played+' / '+num+' Durchläufen';
+  if(prefix==='answered') return (s.totalAnswered||0)+' / '+num+' Fragen';
+  if(prefix==='correct') return s.correct+' / '+num+' richtigen Antworten';
+  if(prefix==='ownq') return (s.customAdded||0)+' / '+num+' eigenen Fragen';
+  if(prefix==='mat') return (s.materialsUploaded||0)+' / '+num+' Dateien';
+  if(prefix==='days') return Object.keys(s.daysUsed||{}).length+' / '+num+' Tagen';
+  if(prefix==='rec') return (s.recommendedPlayed||0)+' / '+num+' Runden';
+  if(prefix==='rev') return (s.reviewPlayed||0)+' / '+num+' Runden';
+  if(prefix==='week') return (s.weekPlanUsed||0)+' / '+num+' Nutzungen';
+  if(b.id.startsWith('fach_')){
+    const c = b.id.slice(5); const st = s.catStats[c];
+    const att = st ? st.attempts : 0;
+    const acc = (st && st.attempts) ? Math.round(100*st.correct/st.attempts) : 0;
+    return att+' / 5 Versuchen (aktuell '+acc+'%)';
+  }
+  if(b.id.startsWith('meister_')){
+    const c = b.id.slice(8);
+    const idxs = allQuestions().map((q,i)=>({q,i})).filter(o=>o.q.c===c).map(o=>o.i);
+    const done = idxs.filter(i=>s.everCorrect && s.everCorrect[i]).length;
+    return done+' / '+idxs.length+' Fragen gemeistert';
+  }
+  return 'Weiter üben, um dieses Abzeichen freizuschalten.';
+}
+
+function badgesHTML(){
+  const earned = state.badges || {};
+  const earnedCount = Object.keys(earned).length;
+  const sorted = BADGE_DEFS.slice().sort((a,b)=>{
+    const ea = !!earned[a.id], eb = !!earned[b.id];
+    if(ea===eb) return 0;
+    return ea ? -1 : 1;
+  });
+  return `
+  <div class="frame"><span class="tick-br"></span><span class="tick-bl"></span>
+    <div class="label">LERNERFOLGE</div>
+    <h1>Abzeichen</h1>
+    <div class="subtitle">${earnedCount} von ${BADGE_DEFS.length} freigeschaltet · antippen für Details</div>
+    <div class="progress-track" style="margin:14px 0 18px;">
+      <div class="fill" style="width:${Math.round((earnedCount/BADGE_DEFS.length)*100)}%"></div>
+    </div>
+    <div class="badge-grid">
+      ${sorted.map(b=>{
+        const isEarned = !!earned[b.id];
+        return `<div class="badge-card ${isEarned?'earned':'locked'}" data-badge="${b.id}">
+          <span class="badge-icon">${isEarned ? b.icon : '🔒'}</span>
+          <div style="flex:1;">
+            <div style="font-size:12.5px; font-weight:500;">${b.name}</div>
+            <div style="font-size:11px; color:var(--text-dim); line-height:1.4;">${b.desc}</div>
+            <div class="badge-detail mono">${isEarned ? 'Freigeschaltet ✓' : badgeProgressText(b, state)}</div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+    <div class="back-link" id="backHome" style="margin-top:16px;">Zurück zur Übersicht</div>
+  </div>`;
+}
+
+function bindBadges(){
+  document.getElementById('backHome').onclick = ()=>{ view="home"; render(); };
+  document.querySelectorAll('.badge-card').forEach(card=>{
+    card.addEventListener('click', ()=>{
+      card.classList.toggle('open');
+      card.classList.remove('badge-pop','badge-shake');
+      void card.offsetWidth;
+      card.classList.add(card.classList.contains('earned') ? 'badge-pop' : 'badge-shake');
+    });
+  });
+}
+
+loadState();
+</script>
+</body>
+</html>
